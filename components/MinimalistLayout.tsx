@@ -82,40 +82,68 @@ function FloatingNav({ activePage, setActivePage }: { activePage: string, setAct
   ];
 
   return (
-    <div className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4 items-start">
-      <button
-        onClick={() => router.push("/")}
-        className="group flex items-center justify-center w-12 h-12 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-full text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all shadow-lg mb-4"
-        title="Back to Gate"
-      >
-        <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-1" />
-      </button>
+    <>
+      {/* Desktop Nav */}
+      <div className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4 items-start">
+        <button
+          onClick={() => router.push("/")}
+          className="group flex items-center justify-center w-12 h-12 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-full text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all shadow-lg mb-4"
+          title="Back to Gate"
+        >
+          <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-1" />
+        </button>
 
-      <div className="flex flex-col gap-3 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 p-3 rounded-3xl shadow-2xl">
+        <div className="flex flex-col gap-3 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 p-3 rounded-3xl shadow-2xl">
+          {navItems.map((item) => (
+            <MagneticElement key={item.id}>
+              <motion.button
+                onClick={() => {
+                  setActivePage(item.id);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`group relative flex items-center h-12 rounded-2xl overflow-hidden transition-all duration-300 ease-out
+                  ${activePage === item.id ? 'bg-emerald-500/20 text-emerald-300' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}
+                `}
+                initial={{ width: 48 }}
+                whileHover={{ width: 180 }}
+              >
+                <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                  <item.icon size={20} />
+                </div>
+                <span className="font-semibold tracking-wide whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 font-[family-name:var(--font-space-grotesk)]">
+                  {item.label}
+                </span>
+              </motion.button>
+            </MagneticElement>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile Nav */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex lg:hidden items-center justify-center gap-2 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 p-2 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+        <button
+          onClick={() => router.push("/")}
+          className="w-12 h-12 flex items-center justify-center rounded-full text-zinc-400 hover:text-emerald-400 transition-all shrink-0"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <div className="w-px h-8 bg-zinc-800 mx-1"></div>
         {navItems.map((item) => (
-          <MagneticElement key={item.id}>
-            <motion.button
-              onClick={() => {
-                setActivePage(item.id);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className={`group relative flex items-center h-12 rounded-2xl overflow-hidden transition-all duration-300 ease-out
-                ${activePage === item.id ? 'bg-emerald-500/20 text-emerald-300' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}
-              `}
-              initial={{ width: 48 }}
-              whileHover={{ width: 180 }}
-            >
-              <div className="w-12 h-12 flex items-center justify-center shrink-0">
-                <item.icon size={20} />
-              </div>
-              <span className="font-semibold tracking-wide whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 font-[family-name:var(--font-space-grotesk)]">
-                {item.label}
-              </span>
-            </motion.button>
-          </MagneticElement>
+          <button
+            key={item.id}
+            onClick={() => {
+              setActivePage(item.id);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className={`w-12 h-12 flex items-center justify-center rounded-full transition-all shrink-0
+              ${activePage === item.id ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-400 hover:text-zinc-200'}
+            `}
+          >
+            <item.icon size={20} />
+          </button>
         ))}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -271,18 +299,17 @@ export function MinimalistLayout() {
 
       <FloatingNav activePage={activePage} setActivePage={setActivePage} />
 
-      <div className="mx-auto min-h-screen max-w-screen-xl px-6 py-12 md:px-12 md:py-20 lg:px-24 lg:pl-32 lg:py-0 flex flex-col lg:flex-row gap-12 relative z-10">
+      <div className="mx-auto min-h-screen max-w-screen-xl px-6 py-12 pb-32 md:px-12 md:py-20 lg:px-24 lg:pl-32 lg:py-0 lg:pb-0 flex flex-col lg:flex-row gap-12 relative z-10">
 
         {/* Left Column (Sticky Profile) */}
-        <header className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-5/12 lg:flex-col lg:py-24">
-          <motion.div initial="hidden" animate="show" variants={staggerContainer} className="flex flex-col">
+        <header className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-5/12 lg:flex-col lg:py-24 text-center lg:text-left items-center lg:items-start">
+          <motion.div initial="hidden" animate="show" variants={staggerContainer} className="flex flex-col items-center lg:items-start">
             {/* Optimal Profile Picture Location */}
-            {/* Standard Profile Picture (Blended) */}
-            <motion.div variants={itemUp} className="mb-10 w-48 h-48 md:w-64 md:h-64 md:h-auto relative">
+            <motion.div variants={itemUp} className="mb-8 w-40 h-40 md:w-56 md:h-56 relative rounded-full overflow-hidden border-2 border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.15)] flex-shrink-0 group bg-emerald-950/30">
               <img 
                 src="/profile.png" 
                 alt={portfolioData.name} 
-                className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </motion.div>
 
