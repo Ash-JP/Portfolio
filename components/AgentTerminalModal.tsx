@@ -229,16 +229,16 @@ export function AgentTerminalModal({ isOpen, onClose }: AgentTerminalModalProps)
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className={`w-full bg-[#0c0916]/90 border border-white/[0.12] rounded-3xl shadow-[0_16px_70px_rgba(168,85,247,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative overflow-hidden backdrop-blur-2xl transition-all duration-300
+            className={`w-full bg-[#181426]/95 border border-[#9893ad]/25 rounded-3xl shadow-[0_16px_70px_rgba(19,17,30,0.85),inset_0_1px_1px_rgba(212,206,226,0.15)] flex flex-col relative overflow-hidden backdrop-blur-2xl transition-all duration-300
               ${isMaximized ? "h-[92vh] max-w-6xl" : "h-[75vh] max-w-3xl"}
             `}
           >
-            {/* Ambient Purple Glow */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-60 h-60 bg-fuchsia-600/5 rounded-full blur-3xl pointer-events-none" />
+            {/* Ambient Twilight Glow */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-[#352a54]/25 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#43346b]/20 rounded-full blur-3xl pointer-events-none" />
 
             {/* Apple Window Header */}
-            <div className="h-12 bg-white/[0.03] border-b border-white/[0.08] flex items-center px-4 justify-between select-none relative z-10 shrink-0 backdrop-blur-md">
+            <div className="h-12 bg-[#1e1930]/60 border-b border-[#9893ad]/15 flex items-center px-4 justify-between select-none relative z-10 shrink-0 backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <button 
                   onClick={onClose} 

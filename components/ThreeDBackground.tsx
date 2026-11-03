@@ -1,18 +1,18 @@
 "use client";
 
-import { useRef, useMemo } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useRef, useMemo, useEffect } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshDistortMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
-// Timing constants — must match IntroAnimation.tsx phases exactly
-const INTRO_DELAY   = 2.5;  // seconds: when sculpture starts growing (after logo flows away)
-const GROW_DURATION = 3.5;  // seconds: 2.5s → 6.0s total
+// ─── Timing constants ─────────────────────────────────────────────────────────
+const INTRO_DELAY   = 3.0;   // seconds: waits for logo to shrink & dissolve
+const GROW_DURATION = 4.2;   // seconds: smooth expansion & drift into background
 
-// Floating ambient lavender particles for spatial depth
+// Floating ambient particles for spatial depth
 function AmbientDust() {
   const pointsRef = useRef<THREE.Points>(null);
-  const count = 140;
+  const count = 150;
 
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -34,16 +34,13 @@ function AmbientDust() {
   return (
     <points ref={pointsRef}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.065}
-        color="#c084fc"
+        size={0.07}
+        color="#c4b5fd"
         transparent
-        opacity={0.35}
+        opacity={0.4}
         sizeAttenuation
         depthWrite={false}
       />
@@ -51,67 +48,134 @@ function AmbientDust() {
   );
 }
 
-// Sculptural element: starts microscopic, grows into background over GROW_DURATION seconds
-function LuxurySculpture() {
+// ─── Single Unified Persistent Sculpture ──────────────────────────────────────
+function UnifiedSculpture({
+  introComplete,
+  activePage,
+}: {
+  introComplete: boolean;
+  activePage: string;
+}) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const { mouse, viewport } = useThree();
+  const mousePos = useRef({ x: 0, y: 0 });
+  const spinAngle = useRef({ x: 0, y: 0 });
+
+  // Direct window mouse listener ensures accurate, fluid tracking even with pointer-events-none
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      // Normalized coordinates: -1 (left/bottom) to +1 (right/top)
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+      mousePos.current.x = x;
+      mousePos.current.y = y;
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMouseMove);
+  }, []);
 
   useFrame((state, delta) => {
-    if (meshRef.current) {
-      const elapsed = state.clock.elapsedTime;
+    if (!meshRef.current) return;
 
-      // ── Growth progress: 0 before INTRO_DELAY, then 0 → 1 over GROW_DURATION ──
-      const rawProgress = Math.max(
-        0,
-        Math.min((elapsed - INTRO_DELAY) / GROW_DURATION, 1)
-      );
-      // Smooth Hermite (ease-in-out) curve
-      const smoothProgress = rawProgress * rawProgress * (3 - 2 * rawProgress);
+    const elapsed = state.clock.elapsedTime;
 
-      // ── Target resting position (follows mouse gently once settled) ──
-      const settledX = (mouse.x * viewport.width)  / 6 + 1.6;
-      const settledY = (mouse.y * viewport.height) / 6 - 0.4;
-      const settledZ = -0.8;
+    // Phase 0: While logo is displaying and collapsing, keep sculpture hidden
+    if (elapsed < INTRO_DELAY && !introComplete) {
+      meshRef.current.scale.set(0, 0, 0);
+      meshRef.current.position.set(0, 0, 1.2);
+      return;
+    }
 
-      // ── Starting position: near center of screen, close to camera ──
+    // ── Target spatial anchor: positioned right behind the left profile / resume area ──
+    // Shifted slightly to the right (-0.95) and slightly down vertically (-0.25)
+    let sectionOffsetX = -0.95;
+    let sectionOffsetY = -0.25;
+    let sectionOffsetZ = -0.75;
+    let sectionTargetScale = 1.42; // slightly decreased from 1.65 for refined proportions
+
+    if (activePage === "projects") {
+      sectionOffsetX = -0.85;
+      sectionOffsetY = -0.15;
+      sectionOffsetZ = -0.80;
+      sectionTargetScale = 1.38;
+    } else if (activePage === "contact") {
+      sectionOffsetX = -0.75;
+      sectionOffsetY = -0.30;
+      sectionOffsetZ = -0.70;
+      sectionTargetScale = 1.45;
+    }
+
+    // Normalized mouse positions (-1 to +1)
+    const mx = mousePos.current.x;
+    const my = mousePos.current.y;
+
+    // ── Accurate, slight yet noticeable cursor parallax offsets ───────────────
+    // Translates ±0.45 on X, ±0.35 on Y, ±0.15 depth shift on Z
+    const cursorOffsetX = mx * 0.45;
+    const cursorOffsetY = my * 0.35;
+    const cursorOffsetZ = mx * 0.15;
+
+    const settledX = sectionOffsetX + cursorOffsetX;
+    const settledY = sectionOffsetY + cursorOffsetY;
+    const settledZ = sectionOffsetZ + cursorOffsetZ;
+
+    let targetX: number;
+    let targetY: number;
+    let targetZ: number;
+    let targetScale: number;
+
+    // Calculate intro growth progress (0 to 1)
+    const rawProgress = Math.min((elapsed - INTRO_DELAY) / GROW_DURATION, 1);
+    const smoothProgress = rawProgress * rawProgress * (3 - 2 * rawProgress); // Hermite curve
+
+    if (!introComplete && smoothProgress < 1) {
+      // ── During Intro: Expand from center (0, 0, 1.2) into the left section ──
       const startX = 0;
       const startY = 0;
-      const startZ = 2.5; // close to camera so even tiny scale is visible
+      const startZ = 1.2;
 
-      // Interpolate position targets
-      const currentTargetX = THREE.MathUtils.lerp(startX, settledX, smoothProgress);
-      const currentTargetY = THREE.MathUtils.lerp(startY, settledY, smoothProgress);
-      const currentTargetZ = THREE.MathUtils.lerp(startZ, settledZ, smoothProgress);
-
-      // Smooth lag on position (feels organic)
-      meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, currentTargetX, 0.05);
-      meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, currentTargetY, 0.05);
-      meshRef.current.position.z = THREE.MathUtils.lerp(meshRef.current.position.z, currentTargetZ, 0.05);
-
-      // ── Scale: starts near-invisible (0.04) → settles at background size (1.25) ──
-      const targetScale = THREE.MathUtils.lerp(0.04, 1.25, smoothProgress);
-      const currentScale = THREE.MathUtils.lerp(
-        meshRef.current.scale.x,
-        targetScale,
-        0.04
-      );
-      meshRef.current.scale.set(currentScale, currentScale, currentScale);
-
-      // ── Spin: fast micro-spin at start, slows to ambient rotation ──
-      const spinSpeed = THREE.MathUtils.lerp(1.2, 0.15, smoothProgress);
-      meshRef.current.rotation.x += delta * spinSpeed;
-      meshRef.current.rotation.y += delta * (spinSpeed * 1.3);
+      targetX = THREE.MathUtils.lerp(startX, settledX, smoothProgress);
+      targetY = THREE.MathUtils.lerp(startY, settledY, smoothProgress);
+      targetZ = THREE.MathUtils.lerp(startZ, settledZ, smoothProgress);
+      targetScale = THREE.MathUtils.lerp(0.16, sectionTargetScale, smoothProgress);
+    } else {
+      // ── Settled Background Phase: Seamless continuation ─────────────────────
+      targetX = settledX;
+      targetY = settledY;
+      targetZ = settledZ;
+      targetScale = sectionTargetScale;
     }
+
+    // Responsive, fluid lerp for cursor motion
+    meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, targetX, 0.07);
+    meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, targetY, 0.07);
+    meshRef.current.position.z = THREE.MathUtils.lerp(meshRef.current.position.z, targetZ, 0.07);
+
+    const smoothedScale = THREE.MathUtils.lerp(meshRef.current.scale.x, targetScale, 0.06);
+    meshRef.current.scale.set(smoothedScale, smoothedScale, smoothedScale);
+
+    // ── Continuous spin + Responsive 3D Cursor Tilt ───────────────────────────
+    spinAngle.current.x += delta * 0.16;
+    spinAngle.current.y += delta * 0.20;
+
+    // Dynamic 3D tilt towards cursor position (catches highlights dynamically)
+    const cursorInfluence = introComplete || smoothProgress >= 0.8 ? 1.0 : smoothProgress;
+    const targetRotX = spinAngle.current.x - my * (0.28 * cursorInfluence);
+    const targetRotY = spinAngle.current.y + mx * (0.36 * cursorInfluence);
+
+    meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, targetRotX, 0.08);
+    meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, targetRotY, 0.08);
   });
 
   return (
-    <Float speed={1.6} rotationIntensity={0.7} floatIntensity={1.1}>
-      {/* Start at scale 0 — the useFrame above drives it up from 0.04 */}
-      <mesh ref={meshRef} position={[0, 0, 2.5]} scale={0.04}>
+    <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.8}>
+      <mesh ref={meshRef} position={[0, 0, 1.2]} scale={0}>
         <torusKnotGeometry args={[1, 0.32, 128, 32, 2, 3]} />
         <MeshDistortMaterial
-          color="#2e1065"
-          distort={0.28}
+          color="#24193b"
+          emissive="#120a1f"
+          emissiveIntensity={0.12}
+          distort={0.25}
           speed={1.4}
           roughness={0.16}
           metalness={0.92}
@@ -122,18 +186,33 @@ function LuxurySculpture() {
   );
 }
 
-export function ThreeDBackground() {
+// ─── Exported ThreeDBackground Component ───────────────────────────────────────
+interface ThreeDBackgroundProps {
+  introComplete: boolean;
+  activePage?: string;
+}
+
+export function ThreeDBackground({ introComplete, activePage = "home" }: ThreeDBackgroundProps) {
   return (
-    <div className="fixed inset-0 pointer-events-none z-[1] opacity-55 transition-opacity duration-1000">
+    <div className="fixed inset-0 pointer-events-none z-[1] opacity-80 transition-opacity duration-1000">
       <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-        <ambientLight intensity={0.45} />
-        {/* Radiance Lavender Key Light */}
-        <directionalLight position={[10, 10, 5]}   intensity={3.0} color="#c084fc" />
-        {/* Deep Violet Fill Light */}
-        <directionalLight position={[-10, -8, -5]} intensity={2.2} color="#8b5cf6" />
+        <ambientLight intensity={0.5} />
+
+        {/* Left Key Light: Silk Lavender directed toward profile area */}
+        <directionalLight position={[-6, 7, 5]}    intensity={3.4} color="#c4b5fd" />
+
+        {/* Soft point light near the sculpture for gentle specular definition */}
+        <pointLight position={[-1.0, 0, 2.5]}      intensity={2.0} color="#e9d5ff" distance={8} />
+
+        {/* Deep Velvet Fill Light from right/rear */}
+        <directionalLight position={[6, -6, -4]}   intensity={2.2} color="#7c3aed" />
+
         {/* Soft Pearlescent Highlight */}
-        <pointLight       position={[0, 4, 3]}     intensity={1.5} color="#f5f3ff" />
-        <LuxurySculpture />
+        <pointLight position={[0, 3, 4]}           intensity={1.4} color="#f5f3ff" />
+
+        {/* Single persistent mesh — framed behind the left profile section */}
+        <UnifiedSculpture introComplete={introComplete} activePage={activePage} />
+
         <AmbientDust />
       </Canvas>
     </div>

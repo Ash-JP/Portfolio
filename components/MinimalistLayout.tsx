@@ -7,7 +7,7 @@ import {
   Award, GraduationCap, Sparkles, FileText, CheckCircle2,
   Terminal, Layers, Cpu, Database, Wrench, Quote
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { IglooStyleIcons } from "@/components/ThreeDIcons";
 import { ThreeDBackground } from "@/components/ThreeDBackground";
@@ -94,7 +94,7 @@ function FloatingNav({
     <>
       {/* Desktop Floating Island Dock */}
       <div className="fixed left-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-2.5 items-start">
-        <div className="flex flex-col gap-2.5 bg-[#0e0a19]/60 backdrop-blur-2xl border border-white/[0.09] p-2.5 rounded-3xl shadow-[0_16px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.12)]">
+        <div className="flex flex-col gap-2.5 bg-[#181426]/75 backdrop-blur-2xl border border-[#9893ad]/20 p-2.5 rounded-3xl shadow-[0_16px_50px_rgba(19,17,30,0.6),inset_0_1px_1px_rgba(212,206,226,0.1)]">
           {navItems.map((item) => {
             const isActive = activePage === item.id;
             return (
@@ -105,13 +105,13 @@ function FloatingNav({
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className={`group relative flex items-center h-11 rounded-2xl overflow-hidden transition-all duration-300 ease-out
-                    ${isActive ? 'bg-purple-500/20 text-purple-200 border border-purple-400/40 shadow-[0_0_25px_rgba(168,85,247,0.25)]' : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 border border-transparent'}
+                    ${isActive ? 'bg-[#352a54]/60 text-[#f5f3ff] border border-[#9893ad]/40 shadow-[0_0_25px_rgba(67,52,107,0.4)]' : 'text-[#9893ad] hover:bg-[#292242]/40 hover:text-[#d4cee2] border border-transparent'}
                   `}
                   initial={{ width: 44 }}
                   whileHover={{ width: 180 }}
                 >
                   <div className="w-11 h-11 flex items-center justify-center shrink-0">
-                    <item.icon size={19} className={isActive ? "text-purple-300" : "text-slate-400 group-hover:text-slate-200"} />
+                    <item.icon size={19} className={isActive ? "text-[#d4cee2]" : "text-[#9893ad] group-hover:text-[#d4cee2]"} />
                   </div>
                   <span className="font-semibold text-xs tracking-wider uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 font-[family-name:var(--font-space-grotesk)]">
                     {item.label}
@@ -121,20 +121,20 @@ function FloatingNav({
             );
           })}
 
-          <div className="w-8 h-px bg-white/[0.08] mx-auto my-1" />
+          <div className="w-8 h-px bg-[#9893ad]/15 mx-auto my-1" />
 
           {/* Dedicated Agent CLI Dock Trigger */}
           <MagneticElement>
             <motion.button
               onClick={onOpenAgent}
-              className="group relative flex items-center h-11 rounded-2xl overflow-hidden transition-all duration-300 ease-out bg-purple-950/25 hover:bg-purple-500/20 border border-purple-500/35 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+              className="group relative flex items-center h-11 rounded-2xl overflow-hidden transition-all duration-300 ease-out bg-[#1e1930]/60 hover:bg-[#292242]/70 border border-[#9893ad]/25 text-[#d4cee2] shadow-[0_0_15px_rgba(67,52,107,0.2)]"
               initial={{ width: 44 }}
               whileHover={{ width: 180 }}
               title="Launch AI Agent CLI"
             >
               <div className="w-11 h-11 flex items-center justify-center shrink-0 relative">
-                <Terminal size={18} className="text-purple-300 group-hover:scale-110 transition-transform" />
-                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                <Terminal size={18} className="text-[#d4cee2] group-hover:scale-110 transition-transform" />
+                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-[#c4b5fd] animate-pulse" />
               </div>
               <span className="font-semibold text-xs tracking-wider uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 font-mono">
                 Agent Terminal
@@ -145,7 +145,7 @@ function FloatingNav({
       </div>
 
       {/* Mobile Floating Bottom Bar */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex lg:hidden items-center justify-center gap-2 bg-[#0e0a19]/80 backdrop-blur-2xl border border-white/[0.1] p-2 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.7)]">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex lg:hidden items-center justify-center gap-2 bg-[#181426]/85 backdrop-blur-2xl border border-[#9893ad]/20 p-2 rounded-full shadow-[0_10px_40px_rgba(19,17,30,0.8)]">
         {navItems.map((item) => {
           const isActive = activePage === item.id;
           return (
@@ -156,21 +156,21 @@ function FloatingNav({
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className={`w-11 h-11 flex items-center justify-center rounded-full transition-all shrink-0
-                ${isActive ? 'bg-purple-500/20 text-purple-300 border border-purple-500/35' : 'text-slate-400 hover:text-slate-200'}
+                ${isActive ? 'bg-[#352a54]/60 text-[#f5f3ff] border border-[#9893ad]/40' : 'text-[#9893ad] hover:text-[#d4cee2]'}
               `}
             >
               <item.icon size={19} />
             </button>
           );
         })}
-        <div className="w-px h-6 bg-white/[0.1] mx-1"></div>
+        <div className="w-px h-6 bg-[#9893ad]/20 mx-1"></div>
         <button
           onClick={onOpenAgent}
-          className="w-11 h-11 flex items-center justify-center rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 relative"
+          className="w-11 h-11 flex items-center justify-center rounded-full bg-[#1e1930]/60 text-[#d4cee2] border border-[#9893ad]/25 relative"
           title="Open Agent Terminal"
         >
           <Terminal size={18} />
-          <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+          <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[#c4b5fd] animate-pulse" />
         </button>
       </div>
     </>
@@ -200,23 +200,12 @@ export function MinimalistLayout() {
   const [currentReview, setCurrentReview] = useState(0);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
 
-  // Intro animation state — only plays once per browser session
+  // Intro animation state — plays only once on the first time the website is opened
   const [introComplete, setIntroComplete] = useState(false);
-  const [introSkipped, setIntroSkipped] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem("introSeen")) {
-      setIntroComplete(true);
-      setIntroSkipped(true);
-    }
-  }, []);
-
-  const handleIntroComplete = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("introSeen", "true");
-    }
+  const handleIntroComplete = useCallback(() => {
     setIntroComplete(true);
-  };
+  }, []);
 
   // Supabase Reviews State
   const [liveReviews, setLiveReviews] = useState<any[]>(portfolioData.reviews || []);
@@ -269,10 +258,10 @@ export function MinimalistLayout() {
   }, [activePage, isReviewFormOpen, liveReviews.length]);
 
   return (
-    <div className="bg-[#09070f] min-h-screen text-slate-300 font-[family-name:var(--font-inter)] selection:bg-purple-500/30 selection:text-purple-200 relative overflow-x-clip">
+    <div className="bg-[#13111e] min-h-screen text-[#d4cee2] font-[family-name:var(--font-inter)] selection:bg-[#43346b]/50 selection:text-[#f5f3ff] relative overflow-x-clip">
       
-      {/* Cinematic Intro — plays once per session, skippable */}
-      {!introSkipped && !introComplete && (
+      {/* Cinematic Intro — plays once on initial website load */}
+      {!introComplete && (
         <IntroAnimation onComplete={handleIntroComplete} />
       )}
 
@@ -282,15 +271,16 @@ export function MinimalistLayout() {
         onClose={() => setIsAgentOpen(false)} 
       />
 
-      {/* Apple-Style Ambient Radial Violet Auras */}
-      <div className="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-violet-600/8 rounded-full blur-[130px] pointer-events-none z-0" />
+      {/* Atmospheric Twilight Radial Auras (Extracted from Video Reference) */}
+      <div className="fixed top-[22%] left-[4%] w-[520px] h-[520px] bg-[#352a54]/20 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#352a54]/18 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-[#43346b]/18 rounded-full blur-[130px] pointer-events-none z-0" />
 
       {/* Precision Hairline Background Grid (Apple Architectural Style) */}
       <div 
-        className="fixed inset-0 pointer-events-none opacity-15 z-0"
+        className="fixed inset-0 pointer-events-none opacity-10 z-0"
         style={{
-          backgroundImage: `linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(to right, rgba(212, 206, 226, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(212, 206, 226, 0.05) 1px, transparent 1px)`,
           backgroundSize: "80px 80px",
           maskImage: "radial-gradient(circle at 50% 30%, #000 30%, transparent 90%)",
           WebkitMaskImage: "radial-gradient(circle at 50% 30%, #000 30%, transparent 90%)"
@@ -306,8 +296,9 @@ export function MinimalistLayout() {
         }}
       />
 
-      {/* 3D Modern Luxury Sculpture in Background (Naturally begins centered & smoothly glides to background) */}
-      <ThreeDBackground />
+      {/* 3D Modern Luxury Sculpture in Background */}
+      {/* Smoothly glides & morphs across activePage without re-triggering intro logo */}
+      <ThreeDBackground introComplete={introComplete} activePage={activePage} />
 
       <FloatingNav 
         activePage={activePage} 
@@ -327,20 +318,20 @@ export function MinimalistLayout() {
             className="flex flex-col items-center lg:items-start w-full"
           >
             {/* Live Status Pill (Apple Frosted Glass Capsule) */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-purple-950/40 border border-purple-500/25 backdrop-blur-xl mb-7 shadow-[0_0_20px_rgba(168,85,247,0.15)]">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#1e1930]/70 border border-[#9893ad]/25 backdrop-blur-xl mb-7 shadow-[0_0_20px_rgba(67,52,107,0.3)]">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c4b5fd] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c4b5fd]"></span>
               </span>
-              <span className="text-xs uppercase tracking-widest text-purple-200 font-mono font-medium">
+              <span className="text-xs uppercase tracking-widest text-[#d4cee2] font-mono font-medium">
                 Available for Opportunities
               </span>
             </div>
 
-            {/* Profile Picture with Ambient Violet Halo */}
+            {/* Profile Picture with Ambient Twilight Halo */}
             <div className="mb-7 relative flex-shrink-0 group">
-              <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-purple-500/40 via-fuchsia-500/30 to-violet-500/40 blur-md group-hover:blur-lg transition-all duration-700 opacity-80 group-hover:opacity-100" />
-              <div className="w-36 h-36 md:w-44 md:h-44 relative rounded-full overflow-hidden border-2 border-white/[0.15] group-hover:border-purple-300/60 transition-all duration-700 shadow-2xl bg-slate-900/90">
+              <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-[#43346b]/60 via-[#352a54]/50 to-[#292242]/60 blur-md group-hover:blur-lg transition-all duration-700 opacity-80 group-hover:opacity-100" />
+              <div className="w-36 h-36 md:w-44 md:h-44 relative rounded-full overflow-hidden border-2 border-[#9893ad]/20 group-hover:border-[#d4cee2]/60 transition-all duration-700 shadow-2xl bg-[#1e1930]/90">
                 <img 
                   src="/profile.png" 
                   alt={portfolioData.name} 
@@ -349,26 +340,26 @@ export function MinimalistLayout() {
               </div>
             </div>
 
-            {/* Name with Metallic White-to-Lavender Gradient */}
+            {/* Name with Metallic Silk-to-Lavender Gradient */}
             <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl font-[family-name:var(--font-syne)] uppercase">
-              <span className="bg-gradient-to-b from-white via-purple-100 to-purple-300/80 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-b from-[#f5f3ff] via-[#d4cee2] to-[#9893ad] bg-clip-text text-transparent">
                 {portfolioData.name}
               </span>
             </h1>
 
             {/* Titles */}
-            <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs md:text-sm font-mono tracking-wider uppercase text-purple-300/90">
+            <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs md:text-sm font-mono tracking-wider uppercase text-[#d4cee2]/90">
               <span>B.Tech CSE (AI & ML)</span>
-              <span className="text-purple-600">•</span>
+              <span className="text-[#5d5a70]">•</span>
               <span>Full Stack</span>
-              <span className="text-purple-600">•</span>
+              <span className="text-[#5d5a70]">•</span>
               <span>UI/UX</span>
-              <span className="text-purple-600">•</span>
+              <span className="text-[#5d5a70]">•</span>
               <span>Tech Lead</span>
             </div>
 
             {/* Concise Bio */}
-            <p className="mt-5 max-w-sm leading-relaxed text-slate-300 text-sm md:text-base font-light">
+            <p className="mt-5 max-w-sm leading-relaxed text-[#9893ad] text-sm md:text-base font-light">
               Designing and engineering high-impact digital products where intelligent problem-solving meets modern architectural precision.
             </p>
 
@@ -379,9 +370,9 @@ export function MinimalistLayout() {
                   href="/api/v1/resume"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-2.5 px-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-xs font-mono uppercase tracking-wider text-purple-100 hover:text-white transition-all flex items-center justify-center gap-2 group shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-md"
+                  className="flex-1 py-2.5 px-4 rounded-2xl bg-[#1e1930]/60 hover:bg-[#292242]/70 border border-[#9893ad]/20 text-xs font-mono uppercase tracking-wider text-[#d4cee2] hover:text-white transition-all flex items-center justify-center gap-2 group shadow-[inset_0_1px_1px_rgba(212,206,226,0.1)] backdrop-blur-md"
                 >
-                  <FileText size={14} className="text-purple-400 group-hover:scale-110 transition-transform" />
+                  <FileText size={14} className="text-[#c4b5fd] group-hover:scale-110 transition-transform" />
                   Resume
                 </a>
                 <button
@@ -389,7 +380,7 @@ export function MinimalistLayout() {
                     setActivePage("contact");
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="flex-1 py-2.5 px-4 rounded-2xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-xs font-mono uppercase tracking-wider text-purple-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.15)] hover:shadow-[0_0_25px_rgba(168,85,247,0.25)] backdrop-blur-md"
+                  className="flex-1 py-2.5 px-4 rounded-2xl bg-[#352a54]/50 hover:bg-[#352a54]/80 border border-[#9893ad]/30 text-xs font-mono uppercase tracking-wider text-[#f5f3ff] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(67,52,107,0.3)] hover:shadow-[0_0_25px_rgba(67,52,107,0.5)] backdrop-blur-md"
                 >
                   <AtSign size={14} />
                   Get in Touch
@@ -399,16 +390,16 @@ export function MinimalistLayout() {
               {/* Agent CLI Feature Button */}
               <button
                 onClick={() => setIsAgentOpen(true)}
-                className="py-2.5 px-4 rounded-2xl bg-gradient-to-r from-purple-950/40 via-violet-950/40 to-fuchsia-950/30 hover:from-purple-900/50 hover:to-violet-900/50 border border-purple-500/35 text-xs font-mono uppercase tracking-wider text-purple-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.15)] backdrop-blur-md"
+                className="py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#1e1930]/80 via-[#292242]/80 to-[#1e1930]/80 hover:from-[#292242] hover:to-[#352a54] border border-[#9893ad]/25 text-xs font-mono uppercase tracking-wider text-[#d4cee2] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(67,52,107,0.2)] backdrop-blur-md"
               >
-                <Terminal size={14} className="text-purple-400" />
+                <Terminal size={14} className="text-[#c4b5fd]" />
                 <span>Launch Agent CLI Tool</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse ml-1" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#c4b5fd] animate-pulse ml-1" />
               </button>
             </div>
 
             {/* Static Left Footer */}
-            <div className="hidden lg:block text-xs font-mono text-purple-300/40 tracking-wider pt-7">
+            <div className="hidden lg:block text-xs font-mono text-[#9893ad]/50 tracking-wider pt-7">
               AashrayOS Minimalist Perspective · v2.5
             </div>
           </motion.div>
@@ -489,7 +480,7 @@ export function MinimalistLayout() {
                         className="group relative transition-all"
                       >
                         {/* Glowing Node Dot on Timeline */}
-                        <div className="absolute -left-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#09070f] border-2 border-purple-400 group-hover:scale-125 group-hover:border-purple-300 transition-all duration-300 shadow-[0_0_12px_rgba(192,132,252,0.6)]" />
+                        <div className="absolute -left-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#13111e] border-2 border-[#c4b5fd] group-hover:scale-125 group-hover:border-white transition-all duration-300 shadow-[0_0_12px_rgba(196,181,253,0.6)]" />
 
                         <div className="p-6 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)]">
                           {/* Duration Badge */}
@@ -668,7 +659,7 @@ export function MinimalistLayout() {
                               Case Study Preview
                             </div>
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#09070f] via-[#09070f]/50 to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#13111e] via-[#13111e]/50 to-transparent" />
                           
                           {/* Live/Status Badge */}
                           <div className="absolute top-4 left-4 z-20">
@@ -691,7 +682,7 @@ export function MinimalistLayout() {
                         </div>
 
                         {/* Content Container */}
-                        <div className="p-8 flex flex-col relative z-20 -mt-8 bg-gradient-to-t from-[#09070f] via-[#09070f]/95 to-transparent">
+                        <div className="p-8 flex flex-col relative z-20 -mt-8 bg-gradient-to-t from-[#13111e] via-[#13111e]/95 to-transparent">
                           <div className="flex items-start justify-between gap-4 mb-3">
                             <h3 className="text-2xl font-black text-white group-hover:text-purple-300 transition-colors flex items-center gap-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
                               {project.title}
