@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import { IglooStyleIcons } from "@/components/ThreeDIcons";
 import { ThreeDBackground } from "@/components/ThreeDBackground";
 import { AgentTerminalModal } from "@/components/AgentTerminalModal";
+import { IntroAnimation } from "@/components/IntroAnimation";
 
 // Apple-style Bezier Curve
 const smoothEase = [0.16, 1, 0.3, 1];
@@ -199,6 +200,24 @@ export function MinimalistLayout() {
   const [currentReview, setCurrentReview] = useState(0);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
 
+  // Intro animation state — only plays once per browser session
+  const [introComplete, setIntroComplete] = useState(false);
+  const [introSkipped, setIntroSkipped] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("introSeen")) {
+      setIntroComplete(true);
+      setIntroSkipped(true);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("introSeen", "true");
+    }
+    setIntroComplete(true);
+  };
+
   // Supabase Reviews State
   const [liveReviews, setLiveReviews] = useState<any[]>(portfolioData.reviews || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -250,8 +269,13 @@ export function MinimalistLayout() {
   }, [activePage, isReviewFormOpen, liveReviews.length]);
 
   return (
-    <div className="bg-[#09070f] min-h-screen text-slate-300 font-[family-name:var(--font-inter)] selection:bg-purple-500/30 selection:text-purple-200 relative overflow-x-hidden">
+    <div className="bg-[#09070f] min-h-screen text-slate-300 font-[family-name:var(--font-inter)] selection:bg-purple-500/30 selection:text-purple-200 relative overflow-x-clip">
       
+      {/* Cinematic Intro — plays once per session, skippable */}
+      {!introSkipped && !introComplete && (
+        <IntroAnimation onComplete={handleIntroComplete} />
+      )}
+
       {/* Embedded Agent Terminal Modal */}
       <AgentTerminalModal 
         isOpen={isAgentOpen} 
@@ -298,8 +322,8 @@ export function MinimalistLayout() {
         <header className="lg:sticky lg:top-0 lg:h-screen lg:self-start lg:w-5/12 lg:flex lg:flex-col lg:justify-center text-center lg:text-left items-center lg:items-start shrink-0 overflow-hidden py-6 lg:py-0">
           <motion.div 
             initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.2, ease: smoothEase }}
+            animate={introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+            transition={{ duration: 1.2, ease: smoothEase }}
             className="flex flex-col items-center lg:items-start w-full"
           >
             {/* Live Status Pill (Apple Frosted Glass Capsule) */}
@@ -393,6 +417,8 @@ export function MinimalistLayout() {
         {/* Right Column (Scrollable Dynamic Content) */}
         <main className="pt-6 lg:w-7/12 lg:py-24 flex flex-col pb-24">
           <AnimatePresence mode="wait">
+            {introComplete && (
+            <>
 
             {/* PAGE: HOME / OVERVIEW */}
             {activePage === "home" && (
@@ -815,7 +841,8 @@ export function MinimalistLayout() {
                                 </div>
                               </motion.div>
                             )}
-                          </AnimatePresence>
+
+          </AnimatePresence>
 
                           {/* Indicators */}
                           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
@@ -829,7 +856,8 @@ export function MinimalistLayout() {
                           </div>
                         </motion.div>
                       )}
-                    </AnimatePresence>
+
+          </AnimatePresence>
                   </div>
                 </motion.section>
               </motion.div>
@@ -913,6 +941,9 @@ export function MinimalistLayout() {
                   <IglooStyleIcons />
                 </motion.div>
               </motion.div>
+            )}
+
+            </>
             )}
 
           </AnimatePresence>
