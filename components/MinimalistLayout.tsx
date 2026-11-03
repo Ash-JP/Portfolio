@@ -1,17 +1,19 @@
 "use client";
 
-import { motion, useMotionValue, useTransform, AnimatePresence, useSpring, useMotionTemplate } from "framer-motion";
+import { motion, useMotionValue, AnimatePresence, useSpring, useMotionTemplate } from "framer-motion";
 import { portfolioData } from "@/lib/data";
-import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, ArrowUpRight, MessageSquare, AtSign, Home, Send, Plus, Briefcase
+  ArrowUpRight, AtSign, Home, Send, Plus, Briefcase,
+  Award, GraduationCap, Sparkles, FileText, CheckCircle2,
+  Terminal, Layers, Cpu, Database, Wrench, Quote
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { IglooStyleIcons } from "@/components/ThreeDIcons";
 import { ThreeDBackground } from "@/components/ThreeDBackground";
+import { AgentTerminalModal } from "@/components/AgentTerminalModal";
 
-// Premium Apple-style Bezier Curve
+// Apple-style Bezier Curve
 const smoothEase = [0.16, 1, 0.3, 1];
 
 // Shared Animation Variants
@@ -20,14 +22,14 @@ const staggerContainer = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
       delayChildren: 0.1
     }
   }
 };
 
 const itemUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   show: {
     opacity: 1,
     y: 0,
@@ -49,8 +51,8 @@ function MagneticElement({ children, className }: { children: React.ReactNode; c
     const { height, width, left, top } = ref.current.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
     const middleY = clientY - (top + height / 2);
-    x.set(middleX * 0.3);
-    y.set(middleY * 0.3);
+    x.set(middleX * 0.25);
+    y.set(middleY * 0.25);
   };
 
   const handleMouseLeave = () => {
@@ -71,166 +73,134 @@ function MagneticElement({ children, className }: { children: React.ReactNode; c
   );
 }
 
-// --- Left Expanding Dock ---
-function FloatingNav({ activePage, setActivePage }: { activePage: string, setActivePage: (p: string) => void }) {
-  const router = useRouter();
-
+// --- Apple-Style Floating Nav Dock with Embedded Agent Tool Trigger ---
+function FloatingNav({
+  activePage,
+  setActivePage,
+  onOpenAgent
+}: {
+  activePage: string;
+  setActivePage: (p: string) => void;
+  onOpenAgent: () => void;
+}) {
   const navItems = [
-    { id: 'home', icon: Home, label: 'Home' },
+    { id: 'home', icon: Home, label: 'Overview' },
     { id: 'projects', icon: Briefcase, label: 'Projects & Reviews' },
     { id: 'contact', icon: AtSign, label: 'Contact' },
   ];
 
   return (
     <>
-      {/* Desktop Nav */}
-      <div className="fixed left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-4 items-start">
-        <button
-          onClick={() => router.push("/")}
-          className="group flex items-center justify-center w-12 h-12 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-full text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all shadow-lg mb-4"
-          title="Back to Gate"
-        >
-          <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-1" />
-        </button>
+      {/* Desktop Floating Island Dock */}
+      <div className="fixed left-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-2.5 items-start">
+        <div className="flex flex-col gap-2.5 bg-[#0e0a19]/60 backdrop-blur-2xl border border-white/[0.09] p-2.5 rounded-3xl shadow-[0_16px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.12)]">
+          {navItems.map((item) => {
+            const isActive = activePage === item.id;
+            return (
+              <MagneticElement key={item.id}>
+                <motion.button
+                  onClick={() => {
+                    setActivePage(item.id);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`group relative flex items-center h-11 rounded-2xl overflow-hidden transition-all duration-300 ease-out
+                    ${isActive ? 'bg-purple-500/20 text-purple-200 border border-purple-400/40 shadow-[0_0_25px_rgba(168,85,247,0.25)]' : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 border border-transparent'}
+                  `}
+                  initial={{ width: 44 }}
+                  whileHover={{ width: 180 }}
+                >
+                  <div className="w-11 h-11 flex items-center justify-center shrink-0">
+                    <item.icon size={19} className={isActive ? "text-purple-300" : "text-slate-400 group-hover:text-slate-200"} />
+                  </div>
+                  <span className="font-semibold text-xs tracking-wider uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 font-[family-name:var(--font-space-grotesk)]">
+                    {item.label}
+                  </span>
+                </motion.button>
+              </MagneticElement>
+            );
+          })}
 
-        <div className="flex flex-col gap-3 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 p-3 rounded-3xl shadow-2xl">
-          {navItems.map((item) => (
-            <MagneticElement key={item.id}>
-              <motion.button
-                onClick={() => {
-                  setActivePage(item.id);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className={`group relative flex items-center h-12 rounded-2xl overflow-hidden transition-all duration-300 ease-out
-                  ${activePage === item.id ? 'bg-emerald-500/20 text-emerald-300' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}
-                `}
-                initial={{ width: 48 }}
-                whileHover={{ width: 180 }}
-              >
-                <div className="w-12 h-12 flex items-center justify-center shrink-0">
-                  <item.icon size={20} />
-                </div>
-                <span className="font-semibold tracking-wide whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 font-[family-name:var(--font-space-grotesk)]">
-                  {item.label}
-                </span>
-              </motion.button>
-            </MagneticElement>
-          ))}
+          <div className="w-8 h-px bg-white/[0.08] mx-auto my-1" />
+
+          {/* Dedicated Agent CLI Dock Trigger */}
+          <MagneticElement>
+            <motion.button
+              onClick={onOpenAgent}
+              className="group relative flex items-center h-11 rounded-2xl overflow-hidden transition-all duration-300 ease-out bg-purple-950/25 hover:bg-purple-500/20 border border-purple-500/35 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+              initial={{ width: 44 }}
+              whileHover={{ width: 180 }}
+              title="Launch AI Agent CLI"
+            >
+              <div className="w-11 h-11 flex items-center justify-center shrink-0 relative">
+                <Terminal size={18} className="text-purple-300 group-hover:scale-110 transition-transform" />
+                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+              </div>
+              <span className="font-semibold text-xs tracking-wider uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 font-mono">
+                Agent Terminal
+              </span>
+            </motion.button>
+          </MagneticElement>
         </div>
       </div>
 
-      {/* Mobile Nav */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex lg:hidden items-center justify-center gap-2 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 p-2 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+      {/* Mobile Floating Bottom Bar */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex lg:hidden items-center justify-center gap-2 bg-[#0e0a19]/80 backdrop-blur-2xl border border-white/[0.1] p-2 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.7)]">
+        {navItems.map((item) => {
+          const isActive = activePage === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                setActivePage(item.id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`w-11 h-11 flex items-center justify-center rounded-full transition-all shrink-0
+                ${isActive ? 'bg-purple-500/20 text-purple-300 border border-purple-500/35' : 'text-slate-400 hover:text-slate-200'}
+              `}
+            >
+              <item.icon size={19} />
+            </button>
+          );
+        })}
+        <div className="w-px h-6 bg-white/[0.1] mx-1"></div>
         <button
-          onClick={() => router.push("/")}
-          className="w-12 h-12 flex items-center justify-center rounded-full text-zinc-400 hover:text-emerald-400 transition-all shrink-0"
+          onClick={onOpenAgent}
+          className="w-11 h-11 flex items-center justify-center rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 relative"
+          title="Open Agent Terminal"
         >
-          <ArrowLeft size={20} />
+          <Terminal size={18} />
+          <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
         </button>
-        <div className="w-px h-8 bg-zinc-800 mx-1"></div>
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              setActivePage(item.id);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className={`w-12 h-12 flex items-center justify-center rounded-full transition-all shrink-0
-              ${activePage === item.id ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-400 hover:text-zinc-200'}
-            `}
-          >
-            <item.icon size={20} />
-          </button>
-        ))}
       </div>
     </>
   );
 }
 
-// --- Matrix Background Component ---
-function MatrixBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const letters = '0123456789'.split('');
-    const fontSize = 16;
-    let columns = width / fontSize;
-    let drops: number[] = [];
-
-    for (let x = 0; x < columns; x++) {
-      drops[x] = Math.random() * -100;
-    }
-
-    const draw = () => {
-      // Semi-transparent zinc-950 to create trail effect
-      ctx.fillStyle = 'rgba(9, 9, 11, 0.1)';
-      ctx.fillRect(0, 0, width, height);
-
-      // Emerald color, slightly more visible
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
-      ctx.font = fontSize + 'px monospace';
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > height && Math.random() > 0.95) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    };
-
-    const interval = setInterval(draw, 90);
-
-    const handleResize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-
-      columns = width / fontSize;
-      const newDrops = [];
-      for (let x = 0; x < columns; x++) {
-        newDrops[x] = drops[x] !== undefined ? drops[x] : Math.random() * -100;
-      }
-      drops = newDrops;
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[5] opacity-75"
-    />
-  );
+// Category Icons Mapping for Skills Arsenal
+function getCategoryIcon(cat: string) {
+  switch (cat) {
+    case "Programming Languages":
+      return <Cpu size={16} className="text-purple-400" />;
+    case "Frameworks & Tech":
+      return <Layers size={16} className="text-fuchsia-400" />;
+    case "Tools & Platforms":
+      return <Wrench size={16} className="text-violet-400" />;
+    case "Core Areas":
+      return <Database size={16} className="text-indigo-400" />;
+    default:
+      return <Sparkles size={16} className="text-purple-400" />;
+  }
 }
 
-// --- Main Layout ---
+// --- Main Minimalist Layout ---
 export function MinimalistLayout() {
   const [activePage, setActivePage] = useState("home");
+  const [isAgentOpen, setIsAgentOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(0);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
 
   // Supabase Reviews State
-  const [liveReviews, setLiveReviews] = useState<any[]>(portfolioData.reviews);
+  const [liveReviews, setLiveReviews] = useState<any[]>(portfolioData.reviews || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reviewName, setReviewName] = useState("");
   const [reviewRole, setReviewRole] = useState("");
@@ -238,7 +208,7 @@ export function MinimalistLayout() {
 
   useEffect(() => {
     const fetchReviews = async () => {
-      if (!supabase) return; // Guard against missing env vars
+      if (!supabase) return;
       try {
         const { data, error } = await supabase
           .from('reviews')
@@ -256,10 +226,10 @@ export function MinimalistLayout() {
     fetchReviews();
   }, []);
 
-  // Spotlight
+  // Subtle Interactive Cursor Spotlight with Lavender Glow
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const spotlightBackground = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(255, 255, 255, 0.06), transparent 80%)`;
+  const spotlightBackground = useMotionTemplate`radial-gradient(650px circle at ${mouseX}px ${mouseY}px, rgba(192, 132, 252, 0.05), transparent 75%)`;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -280,9 +250,30 @@ export function MinimalistLayout() {
   }, [activePage, isReviewFormOpen, liveReviews.length]);
 
   return (
-    <div className="bg-zinc-950 min-h-screen text-zinc-400 font-[family-name:var(--font-space-grotesk)] selection:bg-emerald-500/30 selection:text-emerald-200 relative">
+    <div className="bg-[#09070f] min-h-screen text-slate-300 font-[family-name:var(--font-inter)] selection:bg-purple-500/30 selection:text-purple-200 relative overflow-x-hidden">
       
-      {/* Global Interactive Cursor Spotlight for Text */}
+      {/* Embedded Agent Terminal Modal */}
+      <AgentTerminalModal 
+        isOpen={isAgentOpen} 
+        onClose={() => setIsAgentOpen(false)} 
+      />
+
+      {/* Apple-Style Ambient Radial Violet Auras */}
+      <div className="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-violet-600/8 rounded-full blur-[130px] pointer-events-none z-0" />
+
+      {/* Precision Hairline Background Grid (Apple Architectural Style) */}
+      <div 
+        className="fixed inset-0 pointer-events-none opacity-15 z-0"
+        style={{
+          backgroundImage: `linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px)`,
+          backgroundSize: "80px 80px",
+          maskImage: "radial-gradient(circle at 50% 30%, #000 30%, transparent 90%)",
+          WebkitMaskImage: "radial-gradient(circle at 50% 30%, #000 30%, transparent 90%)"
+        }}
+      />
+
+      {/* Global Interactive Cursor Spotlight */}
       <motion.div
         className="pointer-events-none fixed inset-0 z-30 transition duration-300"
         style={{
@@ -291,97 +282,213 @@ export function MinimalistLayout() {
         }}
       />
 
-      {/* Matrix Background */}
-      <MatrixBackground />
-
-      {/* 3D Background Object (Replaces old Spotlight) */}
+      {/* 3D Modern Luxury Sculpture in Background (Naturally begins centered & smoothly glides to background) */}
       <ThreeDBackground />
 
-      <FloatingNav activePage={activePage} setActivePage={setActivePage} />
+      <FloatingNav 
+        activePage={activePage} 
+        setActivePage={setActivePage} 
+        onOpenAgent={() => setIsAgentOpen(true)}
+      />
 
-      <div className="mx-auto min-h-screen max-w-screen-xl px-6 py-12 pb-32 md:px-12 md:py-20 lg:px-24 lg:pl-32 lg:py-0 lg:pb-0 flex flex-col lg:flex-row gap-12 relative z-10">
+      {/* Main Content Layout with 100% Static Left Profile Column on Desktop */}
+      <div className="mx-auto min-h-screen max-w-screen-xl px-6 py-12 pb-32 md:px-12 md:py-20 lg:px-24 lg:pl-32 lg:py-0 lg:pb-0 flex flex-col lg:flex-row gap-12 lg:gap-16 relative z-10">
 
-        {/* Left Column (Sticky Profile) */}
-        <header className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-5/12 lg:flex-col lg:py-24 text-center lg:text-left items-center lg:items-start">
-          <motion.div initial="hidden" animate="show" variants={staggerContainer} className="flex flex-col items-center lg:items-start">
-            {/* Optimal Profile Picture Location */}
-            <motion.div variants={itemUp} className="mb-8 w-40 h-40 md:w-56 md:h-56 relative rounded-full overflow-hidden border-2 border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.15)] flex-shrink-0 group bg-emerald-950/30">
-              <img 
-                src="/profile.png" 
-                alt={portfolioData.name} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </motion.div>
+        {/* Left Column (100% STATIC STICKY PROFILE: Locked to viewport height, never scrolls) */}
+        <header className="lg:sticky lg:top-0 lg:h-screen lg:self-start lg:w-5/12 lg:flex lg:flex-col lg:justify-center text-center lg:text-left items-center lg:items-start shrink-0 overflow-hidden py-6 lg:py-0">
+          <motion.div 
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.2, ease: smoothEase }}
+            className="flex flex-col items-center lg:items-start w-full"
+          >
+            {/* Live Status Pill (Apple Frosted Glass Capsule) */}
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-purple-950/40 border border-purple-500/25 backdrop-blur-xl mb-7 shadow-[0_0_20px_rgba(168,85,247,0.15)]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
+              </span>
+              <span className="text-xs uppercase tracking-widest text-purple-200 font-mono font-medium">
+                Available for Opportunities
+              </span>
+            </div>
 
-            <motion.h1 variants={itemUp} className="text-4xl font-black tracking-tight text-zinc-100 sm:text-6xl font-[family-name:var(--font-syne)] uppercase">
-              {portfolioData.name}
-            </motion.h1>
-            <motion.h2 variants={itemUp} className="mt-4 text-lg font-medium tracking-widest uppercase text-emerald-400 sm:text-xl font-[family-name:var(--font-space-grotesk)]">
-              {portfolioData.titles.join(" • ")}
-            </motion.h2>
-            <motion.p variants={itemUp} className="mt-6 max-w-xs leading-relaxed text-zinc-400 text-lg font-light">
-              I build pixel-perfect, engaging, and accessible digital experiences where design meets engineering.
-            </motion.p>
+            {/* Profile Picture with Ambient Violet Halo */}
+            <div className="mb-7 relative flex-shrink-0 group">
+              <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-purple-500/40 via-fuchsia-500/30 to-violet-500/40 blur-md group-hover:blur-lg transition-all duration-700 opacity-80 group-hover:opacity-100" />
+              <div className="w-36 h-36 md:w-44 md:h-44 relative rounded-full overflow-hidden border-2 border-white/[0.15] group-hover:border-purple-300/60 transition-all duration-700 shadow-2xl bg-slate-900/90">
+                <img 
+                  src="/profile.png" 
+                  alt={portfolioData.name} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+            </div>
+
+            {/* Name with Metallic White-to-Lavender Gradient */}
+            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl font-[family-name:var(--font-syne)] uppercase">
+              <span className="bg-gradient-to-b from-white via-purple-100 to-purple-300/80 bg-clip-text text-transparent">
+                {portfolioData.name}
+              </span>
+            </h1>
+
+            {/* Titles */}
+            <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs md:text-sm font-mono tracking-wider uppercase text-purple-300/90">
+              <span>B.Tech CSE (AI & ML)</span>
+              <span className="text-purple-600">•</span>
+              <span>Full Stack</span>
+              <span className="text-purple-600">•</span>
+              <span>UI/UX</span>
+              <span className="text-purple-600">•</span>
+              <span>Tech Lead</span>
+            </div>
+
+            {/* Concise Bio */}
+            <p className="mt-5 max-w-sm leading-relaxed text-slate-300 text-sm md:text-base font-light">
+              Designing and engineering high-impact digital products where intelligent problem-solving meets modern architectural precision.
+            </p>
+
+            {/* Clean Apple-Style Action Buttons */}
+            <div className="mt-7 flex flex-col gap-3 w-full max-w-sm">
+              <div className="flex items-center gap-3 w-full">
+                <a
+                  href="/api/v1/resume"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2.5 px-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-xs font-mono uppercase tracking-wider text-purple-100 hover:text-white transition-all flex items-center justify-center gap-2 group shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-md"
+                >
+                  <FileText size={14} className="text-purple-400 group-hover:scale-110 transition-transform" />
+                  Resume
+                </a>
+                <button
+                  onClick={() => {
+                    setActivePage("contact");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="flex-1 py-2.5 px-4 rounded-2xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-xs font-mono uppercase tracking-wider text-purple-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.15)] hover:shadow-[0_0_25px_rgba(168,85,247,0.25)] backdrop-blur-md"
+                >
+                  <AtSign size={14} />
+                  Get in Touch
+                </button>
+              </div>
+
+              {/* Agent CLI Feature Button */}
+              <button
+                onClick={() => setIsAgentOpen(true)}
+                className="py-2.5 px-4 rounded-2xl bg-gradient-to-r from-purple-950/40 via-violet-950/40 to-fuchsia-950/30 hover:from-purple-900/50 hover:to-violet-900/50 border border-purple-500/35 text-xs font-mono uppercase tracking-wider text-purple-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.15)] backdrop-blur-md"
+              >
+                <Terminal size={14} className="text-purple-400" />
+                <span>Launch Agent CLI Tool</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse ml-1" />
+              </button>
+            </div>
+
+            {/* Static Left Footer */}
+            <div className="hidden lg:block text-xs font-mono text-purple-300/40 tracking-wider pt-7">
+              AashrayOS Minimalist Perspective · v2.5
+            </div>
           </motion.div>
-
-
         </header>
 
-
         {/* Right Column (Scrollable Dynamic Content) */}
-        <main className="pt-12 lg:w-7/12 lg:py-24 flex flex-col pb-24">
-
+        <main className="pt-6 lg:w-7/12 lg:py-24 flex flex-col pb-24">
           <AnimatePresence mode="wait">
 
-            {/* PAGE: HOME */}
+            {/* PAGE: HOME / OVERVIEW */}
             {activePage === "home" && (
               <motion.div
                 key="home"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6, ease: smoothEase }}
-                className="flex flex-col gap-32"
+                transition={{ duration: 0.9, delay: 0.15, ease: smoothEase }}
+                className="flex flex-col gap-24"
               >
                 {/* About Section */}
-                <motion.section id="about" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-50px" }} variants={staggerContainer}>
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-5xl font-black uppercase text-zinc-100 mb-10 flex items-center gap-6 font-[family-name:var(--font-syne)] tracking-tight lg:hidden">
-                    About
-                    <span className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent"></span>
-                  </motion.h2>
-                  <div className="text-lg leading-relaxed text-zinc-400 flex flex-col gap-6 font-light">
-                    <motion.p variants={itemUp}>
+                <motion.section id="about" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
+                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                      About & Philosophy
+                    </h2>
+                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                  </motion.div>
+
+                  <motion.div variants={itemUp} className="p-7 rounded-3xl bg-white/[0.035] border border-white/[0.08] backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                    <p className="text-slate-200 text-base md:text-lg font-light leading-relaxed mb-6">
                       {portfolioData.bio}
-                    </motion.p>
-                  </div>
+                    </p>
+                    
+                    {/* Focus Highlights */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-white/[0.08]">
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 size={16} className="text-purple-400 mt-1 shrink-0" />
+                        <div>
+                          <h4 className="text-xs font-mono uppercase text-white font-semibold">Web Development</h4>
+                          <p className="text-xs text-slate-400 font-light mt-0.5">Production Next.js & React</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 size={16} className="text-fuchsia-400 mt-1 shrink-0" />
+                        <div>
+                          <h4 className="text-xs font-mono uppercase text-white font-semibold">AI & Machine Learning</h4>
+                          <p className="text-xs text-slate-400 font-light mt-0.5">Computer Vision & PyTorch</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 size={16} className="text-violet-400 mt-1 shrink-0" />
+                        <div>
+                          <h4 className="text-xs font-mono uppercase text-white font-semibold">Leadership</h4>
+                          <p className="text-xs text-slate-400 font-light mt-0.5">IEEE & ISTE Management</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
                 </motion.section>
 
-                {/* Experience Section */}
-                <motion.section id="experience" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-50px" }} variants={staggerContainer}>
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-5xl font-black uppercase text-zinc-100 mb-12 flex items-center gap-6 font-[family-name:var(--font-syne)] tracking-tight">
-                    Experience
-                    <span className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent"></span>
-                  </motion.h2>
-                  <div className="flex flex-col gap-12">
+                {/* Experience Timeline */}
+                <motion.section id="experience" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
+                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-10">
+                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                      Experience & Leadership
+                    </h2>
+                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                  </motion.div>
+
+                  <div className="relative pl-6 border-l border-white/[0.1] flex flex-col gap-10">
                     {portfolioData.experience.map((exp) => (
-                      <motion.div key={exp.id} variants={itemUp} className="group relative grid pb-1 sm:grid-cols-8 sm:gap-8 md:gap-4 transition-all hover:!opacity-100">
-                        <header className="z-10 mb-2 mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500 sm:col-span-2">{exp.duration}</header>
-                        <div className="z-10 sm:col-span-6">
-                          <h3 className="font-medium leading-snug text-zinc-200">
-                            <div className="inline-flex items-baseline font-bold leading-tight text-zinc-200 hover:text-emerald-400 group/link text-base">
-                              <span>{exp.role} · {exp.company}</span>
-                            </div>
+                      <motion.div 
+                        key={exp.id} 
+                        variants={itemUp} 
+                        className="group relative transition-all"
+                      >
+                        {/* Glowing Node Dot on Timeline */}
+                        <div className="absolute -left-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#09070f] border-2 border-purple-400 group-hover:scale-125 group-hover:border-purple-300 transition-all duration-300 shadow-[0_0_12px_rgba(192,132,252,0.6)]" />
+
+                        <div className="p-6 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)]">
+                          {/* Duration Badge */}
+                          <div className="inline-block px-2.5 py-0.5 rounded-full bg-purple-950/40 border border-purple-500/25 text-purple-300 text-[11px] font-mono uppercase tracking-wider mb-3">
+                            {exp.duration}
+                          </div>
+
+                          <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-purple-300 transition-colors font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                            {exp.role} <span className="text-slate-500 font-normal">·</span> {exp.company}
                           </h3>
-                          <p className="mt-2 text-sm leading-normal text-zinc-400 font-light">
+
+                          <p className="mt-2.5 text-sm leading-relaxed text-slate-300 font-light">
                             {exp.description}
                           </p>
-                          <ul className="mt-3 flex flex-wrap gap-2">
+
+                          <div className="mt-4 flex flex-wrap gap-2">
                             {exp.tech.map((tech, idx) => (
-                              <li key={idx} className="flex items-center rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium leading-5 text-emerald-400 font-[family-name:var(--font-space-grotesk)]">
+                              <span 
+                                key={idx} 
+                                className="px-2.5 py-1 rounded-xl text-xs font-mono bg-white/[0.04] text-purple-200 border border-white/[0.07]"
+                              >
                                 {tech}
-                              </li>
+                              </span>
                             ))}
-                          </ul>
+                          </div>
                         </div>
                       </motion.div>
                     ))}
@@ -389,142 +496,221 @@ export function MinimalistLayout() {
                 </motion.section>
 
                 {/* Education Section */}
-                <motion.section id="education" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-50px" }} variants={staggerContainer}>
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-5xl font-black uppercase text-zinc-100 mb-12 flex items-center gap-6 font-[family-name:var(--font-syne)] tracking-tight">
-                    Education
-                    <span className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent"></span>
-                  </motion.h2>
-                  <motion.div variants={itemUp} className="group relative grid pb-1 sm:grid-cols-8 sm:gap-8 md:gap-4 transition-all hover:!opacity-100">
-                    <header className="z-10 mb-2 mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500 sm:col-span-2">{portfolioData.education.duration}</header>
-                    <div className="z-10 sm:col-span-6">
-                      <h3 className="font-medium leading-snug text-zinc-200">
-                        <div className="inline-flex items-baseline font-bold leading-tight text-zinc-200 text-base">
-                          <span>{portfolioData.education.degree}</span>
-                        </div>
+                <motion.section id="education" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
+                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                      Education
+                    </h2>
+                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                  </motion.div>
+
+                  <motion.div variants={itemUp} className="p-7 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div>
+                      <div className="flex items-center gap-2 text-purple-300 font-mono text-xs uppercase tracking-wider mb-2">
+                        <GraduationCap size={16} />
+                        {portfolioData.education.duration}
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                        {portfolioData.education.degree}
                       </h3>
-                      <p className="mt-2 text-sm leading-normal text-zinc-400 font-light">
+                      <p className="text-slate-400 text-sm mt-1 font-light">
                         {portfolioData.education.institution} — {portfolioData.education.location}
                       </p>
-                      <div className="mt-4 inline-flex items-center rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold leading-5 text-emerald-400 font-[family-name:var(--font-space-grotesk)]">
-                        CGPA: {portfolioData.education.cgpa}
+                    </div>
+
+                    <div className="sm:self-center shrink-0">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-purple-500/15 border border-purple-400/30 text-purple-200 text-sm font-mono font-bold shadow-[0_0_20px_rgba(168,85,247,0.2)]">
+                        <span>CGPA:</span>
+                        <span className="text-white text-base">{portfolioData.education.cgpa}</span>
                       </div>
                     </div>
                   </motion.div>
                 </motion.section>
 
                 {/* Achievements Section */}
-                <motion.section id="achievements" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-50px" }} variants={staggerContainer}>
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-5xl font-black uppercase text-zinc-100 mb-12 flex items-center gap-6 font-[family-name:var(--font-syne)] tracking-tight">
-                    Achievements
-                    <span className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent"></span>
-                  </motion.h2>
-                  <div className="flex flex-col gap-6">
+                <motion.section id="achievements" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
+                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                      Honors & Awards
+                    </h2>
+                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                  </motion.div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {portfolioData.achievements.map((ach, i) => (
-                      <motion.div key={i} variants={itemUp} className="bg-zinc-900/40 border border-zinc-800 p-6 rounded-2xl hover:border-emerald-500/30 transition-colors">
-                        <h3 className="font-bold text-zinc-200 font-[family-name:var(--font-space-grotesk)] text-lg mb-1">{ach.title}</h3>
-                        <h4 className="text-emerald-400 text-sm font-bold mb-3">{ach.event}</h4>
-                        <p className="text-zinc-400 text-sm font-light leading-relaxed">{ach.description}</p>
+                      <motion.div 
+                        key={i} 
+                        variants={itemUp} 
+                        className="p-6 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all duration-300 flex flex-col justify-between shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)]"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2 text-amber-300 mb-3">
+                            <Award size={18} />
+                            <span className="text-xs font-mono uppercase tracking-wider font-semibold">{ach.event}</span>
+                          </div>
+                          <h3 className="text-lg font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight mb-2">
+                            {ach.title}
+                          </h3>
+                          <p className="text-slate-400 text-sm font-light leading-relaxed">
+                            {ach.description}
+                          </p>
+                        </div>
                       </motion.div>
                     ))}
                   </div>
                 </motion.section>
 
-                {/* Skills Section - Premium Compact Layout */}
-                <motion.section id="skills" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-50px" }} variants={staggerContainer}>
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-5xl font-black uppercase text-zinc-100 mb-12 flex items-center gap-6 font-[family-name:var(--font-syne)] tracking-tight">
-                    Arsenal
-                    <span className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent"></span>
-                  </motion.h2>
-                  <motion.div variants={staggerContainer} className="flex flex-wrap gap-3 max-w-2xl">
-                    {portfolioData.skills.flatMap(s => s.items).map((skill, i) => (
+                {/* Skills Arsenal */}
+                <motion.section id="skills" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
+                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                      Technical Arsenal
+                    </h2>
+                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                  </motion.div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {portfolioData.skills.map((skillGroup, idx) => (
                       <motion.div
-                        key={i}
+                        key={idx}
                         variants={itemUp}
-                        whileHover={{ y: -3, scale: 1.05 }}
-                        className="relative group px-5 py-2.5 rounded-full bg-zinc-900/40 border border-zinc-800 text-zinc-300 text-sm font-medium hover:text-white hover:border-emerald-500/50 transition-all cursor-default overflow-hidden font-[family-name:var(--font-space-grotesk)]"
+                        className="p-6 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)]"
                       >
-                        {/* Hover Shimmer/Glow */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-in-out" />
-                        <span className="relative z-10">{skill}</span>
+                        <div className="flex items-center gap-2.5 mb-4">
+                          <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                            {getCategoryIcon(skillGroup.category)}
+                          </div>
+                          <h3 className="text-sm font-mono uppercase tracking-wider text-purple-200 font-semibold">
+                            {skillGroup.category}
+                          </h3>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          {skillGroup.items.map((skill, sIdx) => (
+                            <motion.span
+                              key={sIdx}
+                              whileHover={{ scale: 1.05, y: -2 }}
+                              className="px-3 py-1.5 rounded-xl text-xs font-mono bg-white/[0.04] text-slate-300 border border-white/[0.07] hover:text-white hover:border-purple-400/40 hover:bg-purple-950/30 transition-all cursor-default"
+                            >
+                              {skill}
+                            </motion.span>
+                          ))}
+                        </div>
                       </motion.div>
                     ))}
-                  </motion.div>
+                  </div>
                 </motion.section>
               </motion.div>
             )}
 
-            {/* PAGE: PROJECTS */}
+            {/* PAGE: PROJECTS & REVIEWS */}
             {activePage === "projects" && (
               <motion.div
                 key="projects"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6, ease: smoothEase }}
-                className="flex flex-col gap-32"
+                transition={{ duration: 0.9, delay: 0.15, ease: smoothEase }}
+                className="flex flex-col gap-24"
               >
-                {/* Bento Grid Projects */}
-                <motion.section id="projects" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-50px" }} variants={staggerContainer}>
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-5xl font-black uppercase text-zinc-100 mb-12 flex items-center gap-6 font-[family-name:var(--font-syne)] tracking-tight">
-                    Projects
-                    <span className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent"></span>
-                  </motion.h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {portfolioData.projects.map((project, i) => (
-                      <motion.a
+                {/* Projects Showcase */}
+                <motion.section id="projects" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
+                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-10">
+                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                      Selected Works ({portfolioData.projects.length})
+                    </h2>
+                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                  </motion.div>
+
+                  <div className="grid grid-cols-1 gap-8">
+                    {portfolioData.projects.map((project) => (
+                      <motion.div
                         key={project.id}
-                        href={project.link !== "#" ? project.link : undefined}
-                        target={project.link !== "#" ? "_blank" : undefined}
-                        rel={project.link !== "#" ? "noopener noreferrer" : undefined}
                         variants={itemUp}
-                        className={`group relative rounded-3xl overflow-hidden bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.1)] flex flex-col ${project.colSpan} ${project.link !== "#" ? 'cursor-pointer' : 'cursor-default'}`}
+                        className="group relative rounded-3xl overflow-hidden bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/50 backdrop-blur-2xl transition-all duration-500 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_16px_50px_rgba(0,0,0,0.6)] hover:shadow-[0_0_50px_rgba(168,85,247,0.2)] flex flex-col"
                       >
-                        <div className="w-full h-48 sm:h-56 bg-zinc-800/30 flex items-center justify-center relative overflow-hidden group-hover:bg-zinc-800/50 transition-colors">
-                          {(project.image) ? (
-                            <img src={project.image as string} alt={project.title} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 object-top" />
+                        {/* Media Viewport with Real Website Screenshot Hero */}
+                        <div className="w-full h-56 sm:h-72 bg-slate-900/60 relative overflow-hidden">
+                          {project.image ? (
+                            <img 
+                              src={project.image as string} 
+                              alt={project.title} 
+                              className="w-full h-full object-cover object-top opacity-85 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
+                            />
                           ) : (
-                            <span className="text-zinc-600 font-mono text-xs tracking-widest uppercase relative z-0">Visual Representation</span>
+                            <div className="w-full h-full flex items-center justify-center text-slate-500 font-mono text-xs uppercase tracking-widest">
+                              Case Study Preview
+                            </div>
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent z-10" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#09070f] via-[#09070f]/50 to-transparent" />
+                          
+                          {/* Live/Status Badge */}
+                          <div className="absolute top-4 left-4 z-20">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono uppercase tracking-wider bg-black/60 backdrop-blur-md text-purple-200 border border-white/[0.12] shadow-sm">
+                              <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                              {project.link !== "#" ? "Live Production" : "Engineered Solution"}
+                            </span>
+                          </div>
+
+                          {project.link !== "#" && (
+                            <a
+                              href={project.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="absolute top-4 right-4 z-20 inline-flex items-center gap-1 px-3.5 py-1 rounded-full text-xs font-mono bg-purple-500/25 text-purple-200 border border-purple-400/40 backdrop-blur-xl hover:bg-purple-500 hover:text-white transition-all shadow-[0_0_20px_rgba(168,85,247,0.25)]"
+                            >
+                              Live Site <ArrowUpRight size={13} />
+                            </a>
+                          )}
                         </div>
-                        <div className="p-8 flex flex-col flex-1 relative z-20 -mt-12 bg-gradient-to-t from-zinc-900/90 via-zinc-900/90 to-transparent">
-                          <h3 className="text-2xl font-black text-zinc-100 mb-3 group-hover:text-emerald-400 transition-colors flex items-center gap-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
-                            {project.title}
-                            {project.link !== "#" && (
-                              <ArrowUpRight size={20} className="opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all" />
-                            )}
-                          </h3>
-                          <p className="text-zinc-400 text-sm leading-relaxed mb-6 flex-1 font-light">
+
+                        {/* Content Container */}
+                        <div className="p-8 flex flex-col relative z-20 -mt-8 bg-gradient-to-t from-[#09070f] via-[#09070f]/95 to-transparent">
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <h3 className="text-2xl font-black text-white group-hover:text-purple-300 transition-colors flex items-center gap-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                              {project.title}
+                            </h3>
+                          </div>
+
+                          <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-light">
                             {project.description}
                           </p>
-                          <ul className="flex flex-wrap gap-2">
+
+                          <div className="flex flex-wrap gap-2">
                             {project.tech.map((t, index) => (
-                              <li key={index} className="px-3 py-1 bg-emerald-950/30 text-emerald-400 text-xs font-semibold rounded-full border border-emerald-900/50 font-[family-name:var(--font-space-grotesk)]">
+                              <span 
+                                key={index} 
+                                className="px-3 py-1 bg-purple-950/35 text-purple-200 text-xs font-mono rounded-xl border border-purple-500/20 backdrop-blur-sm"
+                              >
                                 {t}
-                              </li>
+                              </span>
                             ))}
-                          </ul>
+                          </div>
                         </div>
-                      </motion.a>
+                      </motion.div>
                     ))}
                   </div>
                 </motion.section>
 
-                {/* Reviews Carousel & Form */}
-                <motion.section id="reviews" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-50px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center gap-6 mb-12">
-                    <motion.h2 className="text-3xl md:text-5xl font-black uppercase text-zinc-100 flex items-center gap-6 font-[family-name:var(--font-syne)] tracking-tight whitespace-nowrap">
-                      Allies Say
-                    </motion.h2>
-                    <span className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 to-transparent hidden md:block"></span>
+                {/* Allies Say / Reviews Carousel */}
+                <motion.section id="reviews" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
+                  <motion.div variants={itemUp} className="flex items-center justify-between gap-4 mb-10">
+                    <div className="flex items-center gap-4">
+                      <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                        Allies & Feedback
+                      </h2>
+                      <span className="w-16 h-px bg-purple-500/40 hidden sm:block"></span>
+                    </div>
+
                     <button
                       onClick={() => setIsReviewFormOpen(!isReviewFormOpen)}
-                      className="text-emerald-400 text-sm font-bold flex items-center gap-2 hover:text-emerald-300 transition-colors bg-emerald-950/30 px-4 py-2 rounded-full border border-emerald-900/50 whitespace-nowrap shrink-0"
+                      className="text-purple-200 text-xs font-mono uppercase tracking-wider flex items-center gap-2 hover:text-white transition-colors bg-purple-950/40 px-3.5 py-2 rounded-2xl border border-purple-500/30 backdrop-blur-md"
                     >
-                      {isReviewFormOpen ? "Close Form" : <><Plus size={16} /> Drop a Review</>}
+                      {isReviewFormOpen ? "Close Form" : <><Plus size={14} /> Drop a Review</>}
                     </button>
                   </motion.div>
-                  <div className="relative min-h-[420px] w-full">
+
+                  <div className="relative min-h-[380px] w-full">
                     <AnimatePresence mode="wait">
                       {isReviewFormOpen ? (
                         <motion.form
@@ -532,11 +718,11 @@ export function MinimalistLayout() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: smoothEase } }}
                           exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }}
-                          className="absolute inset-0 bg-zinc-900/50 border border-zinc-800 p-8 rounded-3xl flex flex-col gap-4"
+                          className="bg-white/[0.035] border border-white/[0.08] p-8 rounded-3xl flex flex-col gap-4 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)]"
                           onSubmit={async (e) => {
                             e.preventDefault();
                             if (!supabase) {
-                              alert("Database connection is not configured. (Mocking success)");
+                              alert("Review submitted! (Preview mode: configured when Supabase env is connected)");
                               setIsReviewFormOpen(false);
                               setReviewName(""); setReviewRole(""); setReviewText("");
                               return;
@@ -557,13 +743,38 @@ export function MinimalistLayout() {
                             }
                           }}
                         >
-                          <h3 className="text-xl font-bold text-zinc-200 mb-2 font-[family-name:var(--font-syne)] uppercase">Leave your feedback</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <input type="text" value={reviewName} onChange={e => setReviewName(e.target.value)} placeholder="Your Name" required className="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-200 outline-none focus:border-emerald-500/50 transition-colors" />
-                            <input type="text" value={reviewRole} onChange={e => setReviewRole(e.target.value)} placeholder="Your Role (e.g. Designer)" required className="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-200 outline-none focus:border-emerald-500/50 transition-colors" />
+                          <h3 className="text-lg font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight">Leave Feedback</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <input 
+                              type="text" 
+                              value={reviewName} 
+                              onChange={e => setReviewName(e.target.value)} 
+                              placeholder="Your Name" 
+                              required 
+                              className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors text-sm font-mono" 
+                            />
+                            <input 
+                              type="text" 
+                              value={reviewRole} 
+                              onChange={e => setReviewRole(e.target.value)} 
+                              placeholder="Your Role (e.g. Lead Engineer)" 
+                              required 
+                              className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors text-sm font-mono" 
+                            />
                           </div>
-                          <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="Write your review here..." required rows={4} className="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-200 outline-none focus:border-emerald-500/50 transition-colors resize-none flex-1"></textarea>
-                          <button type="submit" disabled={isSubmitting} className="bg-zinc-200 text-zinc-950 font-bold px-6 py-3 rounded-xl hover:bg-white transition-colors self-end flex items-center gap-2 disabled:opacity-50">
+                          <textarea 
+                            value={reviewText} 
+                            onChange={e => setReviewText(e.target.value)} 
+                            placeholder="Share your experience working with Aashray..." 
+                            required 
+                            rows={4} 
+                            className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors resize-none text-sm font-mono"
+                          />
+                          <button 
+                            type="submit" 
+                            disabled={isSubmitting} 
+                            className="bg-gradient-to-r from-purple-600 to-violet-500 hover:from-purple-500 hover:to-violet-400 text-white font-bold text-xs uppercase tracking-wider font-mono px-6 py-3 rounded-2xl transition-all self-end flex items-center gap-2 disabled:opacity-50 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+                          >
                             {isSubmitting ? "Submitting..." : "Submit Review"}
                           </button>
                         </motion.form>
@@ -573,42 +784,46 @@ export function MinimalistLayout() {
                           initial={{ opacity: 0, y: -20 }}
                           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: smoothEase } }}
                           exit={{ opacity: 0, y: 20, transition: { duration: 0.3 } }}
-                          className="absolute inset-0 bg-zinc-900/30 border border-zinc-800 p-8 md:p-12 rounded-3xl flex items-center justify-center overflow-hidden"
+                          className="bg-white/[0.035] border border-white/[0.08] p-8 md:p-12 rounded-3xl flex items-center justify-center overflow-hidden relative backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)]"
                         >
-                          <MessageSquare className="absolute top-8 left-8 text-zinc-800 w-16 h-16 opacity-30 pointer-events-none" />
+                          <Quote className="absolute top-8 left-8 text-white/[0.03] w-28 h-28 pointer-events-none" />
                           <AnimatePresence mode="wait">
                             {liveReviews.length > 0 && (
                               <motion.div
                                 key={currentReview}
-                                initial={{ opacity: 0, x: 50 }}
+                                initial={{ opacity: 0, x: 40 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -50 }}
+                                exit={{ opacity: 0, x: -40 }}
                                 transition={{ duration: 0.5, ease: smoothEase }}
                                 className="w-full relative z-10"
                               >
-                                <p className="text-xl md:text-2xl text-zinc-300 leading-relaxed mb-8 font-light">
-                                  &quot;{liveReviews[currentReview]?.text}&quot;
+                                <p className="text-lg md:text-xl text-slate-200 leading-relaxed mb-8 font-light italic">
+                                  &ldquo;{liveReviews[currentReview]?.text}&rdquo;
                                 </p>
                                 <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-zinc-400 uppercase">
-                                    {liveReviews[currentReview]?.name?.charAt(0)}
+                                  <div className="w-11 h-11 rounded-full bg-purple-950/60 border border-purple-400/40 flex items-center justify-center font-bold text-purple-200 uppercase font-mono shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+                                    {liveReviews[currentReview]?.name?.charAt(0) || "A"}
                                   </div>
                                   <div>
-                                    <h4 className="text-zinc-100 font-bold font-[family-name:var(--font-syne)] uppercase">{liveReviews[currentReview]?.name}</h4>
-                                    <p className="text-zinc-500 text-sm font-[family-name:var(--font-space-grotesk)]">{liveReviews[currentReview]?.role}</p>
+                                    <h4 className="text-white font-bold font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                                      {liveReviews[currentReview]?.name}
+                                    </h4>
+                                    <p className="text-purple-300/70 text-xs font-mono">
+                                      {liveReviews[currentReview]?.role}
+                                    </p>
                                   </div>
                                 </div>
                               </motion.div>
                             )}
                           </AnimatePresence>
 
-                          {/* Carousel Indicators */}
+                          {/* Indicators */}
                           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
                             {liveReviews.map((_, i) => (
                               <button
                                 key={i}
                                 onClick={() => setCurrentReview(i)}
-                                className={`w-2 h-2 rounded-full transition-all duration-500 ease-out ${currentReview === i ? 'bg-emerald-400 w-6' : 'bg-zinc-700'}`}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${currentReview === i ? 'bg-purple-400 w-6 shadow-[0_0_8px_rgba(192,132,252,0.8)]' : 'bg-white/20 w-1.5'}`}
                               />
                             ))}
                           </div>
@@ -627,57 +842,74 @@ export function MinimalistLayout() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6, ease: smoothEase }}
-                className="flex flex-col gap-6 pt-0" /* Compacted gap to prevent scrolling */
+                transition={{ duration: 0.9, delay: 0.15, ease: smoothEase }}
+                className="flex flex-col gap-8 pt-2"
               >
-                <motion.div initial="hidden" animate="show" variants={staggerContainer} className="text-center mb-0">
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-5xl font-black text-zinc-200 mb-2 tracking-tight font-[family-name:var(--font-syne)] uppercase">
-                    Let&apos;s Build Something.
+                <motion.div initial="hidden" animate="show" variants={staggerContainer} className="text-center lg:text-left">
+                  <motion.h2 variants={itemUp} className="text-3xl md:text-4xl font-black text-white mb-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                    Let&apos;s Build Together.
                   </motion.h2>
-                  <motion.p variants={itemUp} className="text-zinc-400 text-base max-w-md mx-auto font-light">
-                    My inbox is always open. Fill out the form below or just shoot me an email directly!
+                  <motion.p variants={itemUp} className="text-slate-400 text-sm md:text-base max-w-lg font-light leading-relaxed">
+                    Have an interesting project, collaboration opportunity, or just want to connect? Send a note or reach out directly.
                   </motion.p>
                 </motion.div>
 
                 <motion.form
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.8, delay: 0.2, ease: smoothEase }}
+                  transition={{ duration: 0.7, delay: 0.15, ease: smoothEase }}
                   action={`mailto:${portfolioData.contactEmail}`}
                   method="POST"
                   encType="text/plain"
-                  className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 md:p-8 w-full max-w-2xl mx-auto flex flex-col gap-4 shadow-2xl relative overflow-hidden"
+                  className="bg-white/[0.035] border border-white/[0.08] rounded-3xl p-6 md:p-8 w-full flex flex-col gap-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)] relative overflow-hidden backdrop-blur-2xl"
                 >
-                  {/* Subtle Glow */}
-                  <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-purple-500/8 rounded-full blur-[80px] pointer-events-none" />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 font-[family-name:var(--font-space-grotesk)]">Name</label>
-                      <input name="name" type="text" required placeholder="John Doe" className="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-zinc-200 outline-none focus:border-emerald-500/50 transition-colors w-full text-sm" />
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-mono font-medium uppercase tracking-wider text-purple-300/80">Your Name</label>
+                      <input 
+                        name="name" 
+                        type="text" 
+                        required 
+                        placeholder="Ada Lovelace" 
+                        className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors w-full text-sm font-mono" 
+                      />
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 font-[family-name:var(--font-space-grotesk)]">Email</label>
-                      <input name="email" type="email" required placeholder="john@example.com" className="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-zinc-200 outline-none focus:border-emerald-500/50 transition-colors w-full text-sm" />
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-mono font-medium uppercase tracking-wider text-purple-300/80">Your Email</label>
+                      <input 
+                        name="email" 
+                        type="email" 
+                        required 
+                        placeholder="ada@example.com" 
+                        className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors w-full text-sm font-mono" 
+                      />
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-1 relative z-10">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 font-[family-name:var(--font-space-grotesk)]">Message</label>
-                    <textarea name="message" required rows={3} placeholder="What&apos;s on your mind?" className="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-zinc-200 outline-none focus:border-emerald-500/50 transition-colors w-full resize-none text-sm"></textarea>
+                  <div className="flex flex-col gap-1.5 relative z-10">
+                    <label className="text-[11px] font-mono font-medium uppercase tracking-wider text-purple-300/80">Message</label>
+                    <textarea 
+                      name="message" 
+                      required 
+                      rows={3} 
+                      placeholder="Tell me about your vision or idea..." 
+                      className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors w-full resize-none text-sm font-mono"
+                    />
                   </div>
 
                   <button
                     type="submit"
-                    className="mt-2 bg-emerald-500 text-emerald-950 font-bold px-6 py-3 rounded-xl hover:bg-emerald-400 transition-colors w-full flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(16,185,129,0.2)] hover:shadow-[0_0_40px_rgba(16,185,129,0.4)] relative z-10 font-[family-name:var(--font-space-grotesk)] tracking-widest uppercase text-sm"
+                    className="mt-2 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-violet-500 hover:from-purple-500 hover:to-violet-400 text-white font-bold px-6 py-3 rounded-2xl transition-all w-full flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.35)] hover:shadow-[0_0_35px_rgba(168,85,247,0.5)] relative z-10 font-mono tracking-wider uppercase text-xs"
                   >
-                    <Send size={16} />
-                    Send Message
+                    <Send size={15} />
+                    Send Transmission
                   </button>
                 </motion.form>
 
-                {/* 3D Morphing Icons tucked closely below the contact form to avoid scrolling */}
-                <motion.div variants={itemUp} className="w-full max-w-2xl mx-auto h-[250px] mt-0">
+                {/* 3D Morphing Icon Interactive Experience */}
+                <motion.div variants={itemUp} className="w-full h-[220px] mt-2">
                   <IglooStyleIcons />
                 </motion.div>
               </motion.div>
@@ -686,9 +918,12 @@ export function MinimalistLayout() {
           </AnimatePresence>
 
           {/* Footer */}
-          <footer className="text-sm text-zinc-500 mt-auto border-t border-zinc-800/50 pt-8 font-[family-name:var(--font-space-grotesk)] text-center lg:text-left">
+          <footer className="text-xs text-slate-500 mt-auto border-t border-white/[0.06] pt-8 font-mono text-center lg:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>
-              Designed in Figma and coded in VS Code by yours truly. Built with <b className="text-zinc-400">Next.js</b> and <b className="text-zinc-400">Tailwind CSS</b>, deployed with <b className="text-zinc-400">Vercel</b>.
+              Designed & Engineered by <span className="text-purple-200 font-semibold">{portfolioData.name}</span>
+            </p>
+            <p className="text-purple-400/60">
+              Next.js · Three.js · Tailwind CSS
             </p>
           </footer>
 

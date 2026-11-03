@@ -239,7 +239,7 @@ function MorphingSandIcon({ setCurrentIconIdx }: { setCurrentIconIdx: (idx: numb
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
     uProgress: { value: 0 },
-    uColor: { value: new THREE.Color("#10b981") },
+    uColor: { value: new THREE.Color("#c084fc") },
     uLightPos: { value: new THREE.Vector3(10, 10, 10) }
   }), []);
 
@@ -343,7 +343,7 @@ export function IglooStyleIcons() {
           href={linkMap[currentKey]}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-emerald-500 font-bold tracking-widest uppercase hover:text-emerald-400 transition-colors"
+          className="text-purple-400 font-bold tracking-widest uppercase hover:text-purple-300 transition-colors flex items-center gap-1.5 text-sm"
         >
           {nameMap[currentKey]}
         </a>
