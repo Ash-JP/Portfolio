@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Center } from "@react-three/drei";
 import * as THREE from "three";
@@ -218,6 +218,9 @@ function MorphingSandIcon({ setCurrentIconIdx }: { setCurrentIconIdx: (idx: numb
   const groupRef = useRef<THREE.Group>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const isAnimatingRef = useRef(false);
+  const lastMorphTimeRef = useRef(0);
+  const clockTimeRef = useRef(0);
 
   const currentIndexRef = useRef(0);
 
@@ -226,7 +229,7 @@ function MorphingSandIcon({ setCurrentIconIdx }: { setCurrentIconIdx: (idx: numb
   const particlesGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
 
-    // FIX: Wrapping the array in a `new Float32Array(...)` makes a true copy.
+    // Wrapping the array in a `new Float32Array(...)` makes a true copy.
     // This stops the transition from mutating the original 'github' position data in memory!
     geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(allPositions[iconKeys[0]]), 3));
     geo.setAttribute('aTarget', new THREE.BufferAttribute(new Float32Array(allPositions[iconKeys[0]]), 3));
@@ -243,16 +246,36 @@ function MorphingSandIcon({ setCurrentIconIdx }: { setCurrentIconIdx: (idx: numb
     uLightPos: { value: new THREE.Vector3(10, 10, 10) }
   }), []);
 
-  useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+  const triggerMorph = () => {
+    if (isAnimatingRef.current || !particlesGeometry) return;
 
-      if (isAnimating) {
+    const nextIdx = (currentIndexRef.current + 1) % iconKeys.length;
+    const targetAttribute = particlesGeometry.getAttribute('aTarget') as THREE.BufferAttribute;
+
+    // Set the new target for the morph function to interpolate towards
+    targetAttribute.array.set(allPositions[iconKeys[nextIdx]]);
+    targetAttribute.needsUpdate = true;
+
+    isAnimatingRef.current = true;
+    setIsAnimating(true);
+    lastMorphTimeRef.current = clockTimeRef.current;
+  };
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    clockTimeRef.current = t;
+
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = t;
+
+      if (isAnimatingRef.current) {
         let newProgress = materialRef.current.uniforms.uProgress.value + 0.015;
 
         if (newProgress >= 1) {
           newProgress = 0;
+          isAnimatingRef.current = false;
           setIsAnimating(false);
+          lastMorphTimeRef.current = t;
 
           const nextIdx = (currentIndexRef.current + 1) % iconKeys.length;
           const posAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
@@ -265,28 +288,27 @@ function MorphingSandIcon({ setCurrentIconIdx }: { setCurrentIconIdx: (idx: numb
           setCurrentIconIdx(nextIdx);
         }
         materialRef.current.uniforms.uProgress.value = newProgress;
+      } else {
+        // Auto-morphs every 3.5 seconds autonomously without needing user interaction
+        if (t - lastMorphTimeRef.current >= 3.5) {
+          triggerMorph();
+        }
       }
     }
 
     if (groupRef.current) {
       groupRef.current.rotation.y = 0;
       groupRef.current.rotation.x = 0;
-      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.05;
+      groupRef.current.position.y = Math.sin(t * 1.5) * 0.05;
     }
   });
 
-  const triggerMorph = () => {
-    if (isAnimating || !particlesGeometry) return;
-
-    const nextIdx = (currentIndexRef.current + 1) % iconKeys.length;
-    const targetAttribute = particlesGeometry.getAttribute('aTarget') as THREE.BufferAttribute;
-
-    // Set the new target for the morph function to interpolate towards
-    targetAttribute.array.set(allPositions[iconKeys[nextIdx]]);
-    targetAttribute.needsUpdate = true;
-
-    setIsAnimating(true);
-  };
+  // Ensure body cursor returns to auto if unmounted while hovering
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = 'auto';
+    };
+  }, []);
 
   return (
     <group
@@ -337,7 +359,7 @@ export function IglooStyleIcons() {
       </Canvas>
       <div className="mt-4 flex flex-col items-center gap-2">
         <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase">
-          Click Object to Morph
+          Auto-Morphing · Click to Cycle
         </p>
         <a
           href={linkMap[currentKey]}

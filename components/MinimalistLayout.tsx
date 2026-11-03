@@ -356,7 +356,7 @@ export function MinimalistLayout() {
             <div className="mt-5 sm:mt-7 flex flex-col gap-2.5 sm:gap-3 w-full max-w-sm">
               <div className="flex items-center gap-2.5 sm:gap-3 w-full">
                 <a
-                  href="/api/v1/resume"
+                  href="/resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl sm:rounded-2xl bg-[#1e1930]/60 hover:bg-[#292242]/70 border border-[#9893ad]/20 text-[11px] sm:text-xs font-mono uppercase tracking-wider text-[#d4cee2] hover:text-white transition-all flex items-center justify-center gap-2 group shadow-[inset_0_1px_1px_rgba(212,206,226,0.1)] backdrop-blur-md"

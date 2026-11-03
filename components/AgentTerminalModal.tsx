@@ -80,6 +80,9 @@ export function AgentTerminalModal({ isOpen, onClose }: AgentTerminalModalProps)
               <span className="text-purple-300 font-semibold">education</span>
               <span className="text-slate-400">University, degree & GPA verification</span>
 
+              <span className="text-purple-300 font-semibold">resume</span>
+              <span className="text-slate-400">View and download official PDF resume</span>
+
               <span className="text-purple-300 font-semibold">contact</span>
               <span className="text-slate-400">Email transmission endpoint & channels</span>
 
@@ -191,6 +194,24 @@ export function AgentTerminalModal({ isOpen, onClose }: AgentTerminalModalProps)
             <div>Direct Email: <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(portfolioData.contactEmail)}`} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline">{portfolioData.contactEmail}</a></div>
             <div>LinkedIn: <a href={portfolioData.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline">aashray-j-pramod-contactme</a></div>
             <div>GitHub: <a href={portfolioData.socials.github} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline">github.com</a></div>
+          </div>
+        );
+        break;
+
+      case "resume":
+      case "cv":
+        output = (
+          <div className="flex flex-col gap-2 text-xs font-mono text-slate-300">
+            <div className="text-purple-300 font-bold">OFFICIAL CURRICULUM VITAE:</div>
+            <div>Download or inspect official PDF:</div>
+            <a 
+              href="/resume.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1.5 text-purple-300 hover:text-white underline"
+            >
+              Open Resume (PDF) <ArrowUpRight size={13} />
+            </a>
           </div>
         );
         break;
