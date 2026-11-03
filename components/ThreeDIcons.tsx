@@ -319,7 +319,7 @@ export function IglooStyleIcons() {
   const linkMap: Record<string, string> = {
     github: portfolioData.socials.github,
     linkedin: portfolioData.socials.linkedin,
-    mail: `mailto:${portfolioData.contactEmail}`,
+    mail: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(portfolioData.contactEmail)}`,
     instagram: portfolioData.socials.instagram
   };
 

@@ -188,8 +188,8 @@ export function AgentTerminalModal({ isOpen, onClose }: AgentTerminalModalProps)
         output = (
           <div className="flex flex-col gap-1.5 text-xs font-mono text-slate-300">
             <div className="text-purple-300 font-bold">COMMUNICATION CHANNELS:</div>
-            <div>Direct Email: <a href={`mailto:${portfolioData.contactEmail}`} className="text-purple-300 underline">{portfolioData.contactEmail}</a></div>
-            <div>LinkedIn: <a href={portfolioData.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline">aashray-j-pramod-</a></div>
+            <div>Direct Email: <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(portfolioData.contactEmail)}`} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline">{portfolioData.contactEmail}</a></div>
+            <div>LinkedIn: <a href={portfolioData.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline">aashray-j-pramod-contactme</a></div>
             <div>GitHub: <a href={portfolioData.socials.github} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline">github.com</a></div>
           </div>
         );

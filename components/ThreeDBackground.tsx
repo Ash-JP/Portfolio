@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, MeshDistortMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -59,6 +59,7 @@ function UnifiedSculpture({
   const meshRef = useRef<THREE.Mesh>(null);
   const mousePos = useRef({ x: 0, y: 0 });
   const spinAngle = useRef({ x: 0, y: 0 });
+  const { viewport } = useThree();
 
   // Direct window mouse listener ensures accurate, fluid tracking even with pointer-events-none
   useEffect(() => {
@@ -78,42 +79,44 @@ function UnifiedSculpture({
     if (!meshRef.current) return;
 
     const elapsed = state.clock.elapsedTime;
+    const isMobile = viewport.width < 5.2;
 
     // Phase 0: While logo is displaying and collapsing, keep sculpture hidden
     if (elapsed < INTRO_DELAY && !introComplete) {
       meshRef.current.scale.set(0, 0, 0);
-      meshRef.current.position.set(0, 0, 1.2);
+      meshRef.current.position.set(0, isMobile ? 0.6 : 0, 1.2);
       return;
     }
 
-    // ── Target spatial anchor: positioned right behind the left profile / resume area ──
-    // Shifted slightly to the right (-0.95) and slightly down vertically (-0.25)
-    let sectionOffsetX = -0.95;
-    let sectionOffsetY = -0.25;
-    let sectionOffsetZ = -0.75;
-    let sectionTargetScale = 1.42; // slightly decreased from 1.65 for refined proportions
+    // ── Target spatial anchor ─────────────────────────────────────────────────
+    // Desktop: positioned behind left profile/resume area (-0.95, -0.25, scale 1.42)
+    // Mobile: centered at top as a compact halo behind avatar (0.0, +1.35, shorter scale 0.95)
+    let sectionOffsetX = isMobile ? 0.0 : -0.95;
+    let sectionOffsetY = isMobile ? 1.35 : -0.25;
+    let sectionOffsetZ = isMobile ? -0.90 : -0.75;
+    let sectionTargetScale = isMobile ? 0.95 : 1.42;
 
     if (activePage === "projects") {
-      sectionOffsetX = -0.85;
-      sectionOffsetY = -0.15;
-      sectionOffsetZ = -0.80;
-      sectionTargetScale = 1.38;
+      sectionOffsetX = isMobile ? 0.0 : -0.85;
+      sectionOffsetY = isMobile ? 1.45 : -0.15;
+      sectionOffsetZ = isMobile ? -0.95 : -0.80;
+      sectionTargetScale = isMobile ? 0.90 : 1.38;
     } else if (activePage === "contact") {
-      sectionOffsetX = -0.75;
-      sectionOffsetY = -0.30;
-      sectionOffsetZ = -0.70;
-      sectionTargetScale = 1.45;
+      sectionOffsetX = isMobile ? 0.0 : -0.75;
+      sectionOffsetY = isMobile ? 1.25 : -0.30;
+      sectionOffsetZ = isMobile ? -0.85 : -0.70;
+      sectionTargetScale = isMobile ? 1.00 : 1.45;
     }
 
     // Normalized mouse positions (-1 to +1)
     const mx = mousePos.current.x;
     const my = mousePos.current.y;
 
-    // ── Accurate, slight yet noticeable cursor parallax offsets ───────────────
-    // Translates ±0.45 on X, ±0.35 on Y, ±0.15 depth shift on Z
-    const cursorOffsetX = mx * 0.45;
-    const cursorOffsetY = my * 0.35;
-    const cursorOffsetZ = mx * 0.15;
+    // Cursor parallax: subtle on mobile, full on desktop
+    const cursorMultiplier = isMobile ? 0.35 : 1.0;
+    const cursorOffsetX = mx * 0.45 * cursorMultiplier;
+    const cursorOffsetY = my * 0.35 * cursorMultiplier;
+    const cursorOffsetZ = mx * 0.15 * cursorMultiplier;
 
     const settledX = sectionOffsetX + cursorOffsetX;
     const settledY = sectionOffsetY + cursorOffsetY;
@@ -129,9 +132,9 @@ function UnifiedSculpture({
     const smoothProgress = rawProgress * rawProgress * (3 - 2 * rawProgress); // Hermite curve
 
     if (!introComplete && smoothProgress < 1) {
-      // ── During Intro: Expand from center (0, 0, 1.2) into the left section ──
+      // ── During Intro: Expand from center into resting position ──────────────
       const startX = 0;
-      const startY = 0;
+      const startY = isMobile ? 0.3 : 0;
       const startZ = 1.2;
 
       targetX = THREE.MathUtils.lerp(startX, settledX, smoothProgress);

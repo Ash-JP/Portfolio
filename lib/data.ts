@@ -5,7 +5,7 @@ export const portfolioData = {
   contactEmail: "aashrayjpramod@gmail.com",
   socials: {
     github: "https://github.com",
-    linkedin: "https://www.linkedin.com/in/aashray-j-pramod-",
+    linkedin: "https://www.linkedin.com/in/aashray-j-pramod-contactme/",
     twitter: "https://twitter.com",
     instagram: "https://instagram.com"
   },

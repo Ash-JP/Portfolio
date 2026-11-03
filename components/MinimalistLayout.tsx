@@ -306,32 +306,21 @@ export function MinimalistLayout() {
         onOpenAgent={() => setIsAgentOpen(true)}
       />
 
-      {/* Main Content Layout with 100% Static Left Profile Column on Desktop */}
-      <div className="mx-auto min-h-screen max-w-screen-xl px-6 py-12 pb-32 md:px-12 md:py-20 lg:px-24 lg:pl-32 lg:py-0 lg:pb-0 flex flex-col lg:flex-row gap-12 lg:gap-16 relative z-10">
+      {/* Main Content Layout: Compact responsive structure on mobile, static sticky on desktop */}
+      <div className="mx-auto min-h-screen max-w-screen-xl px-4 py-8 pb-28 md:px-12 md:py-20 lg:px-24 lg:pl-32 lg:py-0 lg:pb-0 flex flex-col lg:flex-row gap-8 lg:gap-16 relative z-10">
 
-        {/* Left Column (100% STATIC STICKY PROFILE: Locked to viewport height, never scrolls) */}
-        <header className="lg:sticky lg:top-0 lg:h-screen lg:self-start lg:w-5/12 lg:flex lg:flex-col lg:justify-center text-center lg:text-left items-center lg:items-start shrink-0 overflow-hidden py-6 lg:py-0">
+        {/* Left Column (100% STATIC STICKY PROFILE: Locked to viewport height on desktop, streamlined on mobile) */}
+        <header className="lg:sticky lg:top-0 lg:h-screen lg:self-start lg:w-5/12 lg:flex lg:flex-col lg:justify-center text-center lg:text-left items-center lg:items-start shrink-0 overflow-hidden py-4 lg:py-0">
           <motion.div 
             initial={{ opacity: 0, y: 24 }}
             animate={introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: 1.2, ease: smoothEase }}
             className="flex flex-col items-center lg:items-start w-full"
           >
-            {/* Live Status Pill (Apple Frosted Glass Capsule) */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#1e1930]/70 border border-[#9893ad]/25 backdrop-blur-xl mb-7 shadow-[0_0_20px_rgba(67,52,107,0.3)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c4b5fd] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c4b5fd]"></span>
-              </span>
-              <span className="text-xs uppercase tracking-widest text-[#d4cee2] font-mono font-medium">
-                Available for Opportunities
-              </span>
-            </div>
-
-            {/* Profile Picture with Ambient Twilight Halo */}
-            <div className="mb-7 relative flex-shrink-0 group">
+            {/* Profile Picture with Ambient Twilight Halo — compact on mobile */}
+            <div className="mb-4 sm:mb-7 relative flex-shrink-0 group">
               <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-[#43346b]/60 via-[#352a54]/50 to-[#292242]/60 blur-md group-hover:blur-lg transition-all duration-700 opacity-80 group-hover:opacity-100" />
-              <div className="w-36 h-36 md:w-44 md:h-44 relative rounded-full overflow-hidden border-2 border-[#9893ad]/20 group-hover:border-[#d4cee2]/60 transition-all duration-700 shadow-2xl bg-[#1e1930]/90">
+              <div className="w-24 h-24 sm:w-36 sm:h-36 md:w-44 md:h-44 relative rounded-full overflow-hidden border-2 border-[#9893ad]/20 group-hover:border-[#d4cee2]/60 transition-all duration-700 shadow-2xl bg-[#1e1930]/90">
                 <img 
                   src="/profile.png" 
                   alt={portfolioData.name} 
@@ -340,15 +329,15 @@ export function MinimalistLayout() {
               </div>
             </div>
 
-            {/* Name with Metallic Silk-to-Lavender Gradient */}
-            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl font-[family-name:var(--font-syne)] uppercase">
+            {/* Name with Metallic Silk-to-Lavender Gradient — responsive size */}
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white font-[family-name:var(--font-syne)] uppercase">
               <span className="bg-gradient-to-b from-[#f5f3ff] via-[#d4cee2] to-[#9893ad] bg-clip-text text-transparent">
                 {portfolioData.name}
               </span>
             </h1>
 
-            {/* Titles */}
-            <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs md:text-sm font-mono tracking-wider uppercase text-[#d4cee2]/90">
+            {/* Titles — compact wrapped chips on mobile */}
+            <div className="mt-2.5 sm:mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm font-mono tracking-wider uppercase text-[#d4cee2]/90">
               <span>B.Tech CSE (AI & ML)</span>
               <span className="text-[#5d5a70]">•</span>
               <span>Full Stack</span>
@@ -359,20 +348,20 @@ export function MinimalistLayout() {
             </div>
 
             {/* Concise Bio */}
-            <p className="mt-5 max-w-sm leading-relaxed text-[#9893ad] text-sm md:text-base font-light">
+            <p className="mt-3.5 sm:mt-5 max-w-sm leading-relaxed text-[#9893ad] text-xs sm:text-sm md:text-base font-light">
               Designing and engineering high-impact digital products where intelligent problem-solving meets modern architectural precision.
             </p>
 
-            {/* Clean Apple-Style Action Buttons */}
-            <div className="mt-7 flex flex-col gap-3 w-full max-w-sm">
-              <div className="flex items-center gap-3 w-full">
+            {/* Clean Apple-Style Action Buttons — compact row on mobile */}
+            <div className="mt-5 sm:mt-7 flex flex-col gap-2.5 sm:gap-3 w-full max-w-sm">
+              <div className="flex items-center gap-2.5 sm:gap-3 w-full">
                 <a
                   href="/api/v1/resume"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-2.5 px-4 rounded-2xl bg-[#1e1930]/60 hover:bg-[#292242]/70 border border-[#9893ad]/20 text-xs font-mono uppercase tracking-wider text-[#d4cee2] hover:text-white transition-all flex items-center justify-center gap-2 group shadow-[inset_0_1px_1px_rgba(212,206,226,0.1)] backdrop-blur-md"
+                  className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl sm:rounded-2xl bg-[#1e1930]/60 hover:bg-[#292242]/70 border border-[#9893ad]/20 text-[11px] sm:text-xs font-mono uppercase tracking-wider text-[#d4cee2] hover:text-white transition-all flex items-center justify-center gap-2 group shadow-[inset_0_1px_1px_rgba(212,206,226,0.1)] backdrop-blur-md"
                 >
-                  <FileText size={14} className="text-[#c4b5fd] group-hover:scale-110 transition-transform" />
+                  <FileText size={13} className="text-[#c4b5fd] group-hover:scale-110 transition-transform" />
                   Resume
                 </a>
                 <button
@@ -380,9 +369,9 @@ export function MinimalistLayout() {
                     setActivePage("contact");
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="flex-1 py-2.5 px-4 rounded-2xl bg-[#352a54]/50 hover:bg-[#352a54]/80 border border-[#9893ad]/30 text-xs font-mono uppercase tracking-wider text-[#f5f3ff] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(67,52,107,0.3)] hover:shadow-[0_0_25px_rgba(67,52,107,0.5)] backdrop-blur-md"
+                  className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl sm:rounded-2xl bg-[#352a54]/50 hover:bg-[#352a54]/80 border border-[#9893ad]/30 text-[11px] sm:text-xs font-mono uppercase tracking-wider text-[#f5f3ff] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(67,52,107,0.3)] hover:shadow-[0_0_25px_rgba(67,52,107,0.5)] backdrop-blur-md"
                 >
-                  <AtSign size={14} />
+                  <AtSign size={13} />
                   Get in Touch
                 </button>
               </div>
@@ -390,9 +379,9 @@ export function MinimalistLayout() {
               {/* Agent CLI Feature Button */}
               <button
                 onClick={() => setIsAgentOpen(true)}
-                className="py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#1e1930]/80 via-[#292242]/80 to-[#1e1930]/80 hover:from-[#292242] hover:to-[#352a54] border border-[#9893ad]/25 text-xs font-mono uppercase tracking-wider text-[#d4cee2] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(67,52,107,0.2)] backdrop-blur-md"
+                className="py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1e1930]/80 via-[#292242]/80 to-[#1e1930]/80 hover:from-[#292242] hover:to-[#352a54] border border-[#9893ad]/25 text-[11px] sm:text-xs font-mono uppercase tracking-wider text-[#d4cee2] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(67,52,107,0.2)] backdrop-blur-md"
               >
-                <Terminal size={14} className="text-[#c4b5fd]" />
+                <Terminal size={13} className="text-[#c4b5fd]" />
                 <span>Launch Agent CLI Tool</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#c4b5fd] animate-pulse ml-1" />
               </button>
@@ -419,44 +408,44 @@ export function MinimalistLayout() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.9, delay: 0.15, ease: smoothEase }}
-                className="flex flex-col gap-24"
+                className="flex flex-col gap-12 sm:gap-24"
               >
                 {/* About Section */}
                 <motion.section id="about" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
-                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                  <motion.div variants={itemUp} className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-8">
+                    <h2 className="text-xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
                       About & Philosophy
                     </h2>
-                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                    <span className="flex-1 h-px bg-gradient-to-r from-[#43346b]/60 via-[#352a54]/30 to-transparent"></span>
                   </motion.div>
 
-                  <motion.div variants={itemUp} className="p-7 rounded-3xl bg-white/[0.035] border border-white/[0.08] backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)] relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
-                    <p className="text-slate-200 text-base md:text-lg font-light leading-relaxed mb-6">
+                  <motion.div variants={itemUp} className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-[#1e1930]/40 border border-[#9893ad]/15 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_12px_40px_rgba(19,17,30,0.6)] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-48 h-48 bg-[#43346b]/15 rounded-full blur-2xl pointer-events-none" />
+                    <p className="text-[#d4cee2] text-sm sm:text-base md:text-lg font-light leading-relaxed mb-4 sm:mb-6">
                       {portfolioData.bio}
                     </p>
                     
                     {/* Focus Highlights */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-white/[0.08]">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-3 sm:pt-4 border-t border-[#9893ad]/15">
                       <div className="flex items-start gap-2.5">
-                        <CheckCircle2 size={16} className="text-purple-400 mt-1 shrink-0" />
+                        <CheckCircle2 size={16} className="text-[#c4b5fd] mt-1 shrink-0" />
                         <div>
                           <h4 className="text-xs font-mono uppercase text-white font-semibold">Web Development</h4>
-                          <p className="text-xs text-slate-400 font-light mt-0.5">Production Next.js & React</p>
+                          <p className="text-xs text-[#9893ad] font-light mt-0.5">Production Next.js & React</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-2.5">
-                        <CheckCircle2 size={16} className="text-fuchsia-400 mt-1 shrink-0" />
+                        <CheckCircle2 size={16} className="text-[#d4cee2] mt-1 shrink-0" />
                         <div>
                           <h4 className="text-xs font-mono uppercase text-white font-semibold">AI & Machine Learning</h4>
-                          <p className="text-xs text-slate-400 font-light mt-0.5">Computer Vision & PyTorch</p>
+                          <p className="text-xs text-[#9893ad] font-light mt-0.5">Computer Vision & PyTorch</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-2.5">
-                        <CheckCircle2 size={16} className="text-violet-400 mt-1 shrink-0" />
+                        <CheckCircle2 size={16} className="text-[#a78bfa] mt-1 shrink-0" />
                         <div>
                           <h4 className="text-xs font-mono uppercase text-white font-semibold">Leadership</h4>
-                          <p className="text-xs text-slate-400 font-light mt-0.5">IEEE & ISTE Management</p>
+                          <p className="text-xs text-[#9893ad] font-light mt-0.5">IEEE & ISTE Management</p>
                         </div>
                       </div>
                     </div>
@@ -465,14 +454,14 @@ export function MinimalistLayout() {
 
                 {/* Experience Timeline */}
                 <motion.section id="experience" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-10">
-                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                  <motion.div variants={itemUp} className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-10">
+                    <h2 className="text-xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
                       Experience & Leadership
                     </h2>
-                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                    <span className="flex-1 h-px bg-gradient-to-r from-[#43346b]/60 via-[#352a54]/30 to-transparent"></span>
                   </motion.div>
 
-                  <div className="relative pl-6 border-l border-white/[0.1] flex flex-col gap-10">
+                  <div className="relative pl-5 sm:pl-6 border-l border-[#9893ad]/20 flex flex-col gap-6 sm:gap-10">
                     {portfolioData.experience.map((exp) => (
                       <motion.div 
                         key={exp.id} 
@@ -480,27 +469,27 @@ export function MinimalistLayout() {
                         className="group relative transition-all"
                       >
                         {/* Glowing Node Dot on Timeline */}
-                        <div className="absolute -left-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#13111e] border-2 border-[#c4b5fd] group-hover:scale-125 group-hover:border-white transition-all duration-300 shadow-[0_0_12px_rgba(196,181,253,0.6)]" />
+                        <div className="absolute -left-[27px] sm:-left-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#13111e] border-2 border-[#c4b5fd] group-hover:scale-125 group-hover:border-white transition-all duration-300 shadow-[0_0_12px_rgba(196,181,253,0.6)]" />
 
-                        <div className="p-6 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)]">
+                        <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#1e1930]/40 border border-[#9893ad]/15 hover:border-[#d4cee2]/40 backdrop-blur-2xl transition-all duration-300 shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_8px_30px_rgba(19,17,30,0.5)]">
                           {/* Duration Badge */}
-                          <div className="inline-block px-2.5 py-0.5 rounded-full bg-purple-950/40 border border-purple-500/25 text-purple-300 text-[11px] font-mono uppercase tracking-wider mb-3">
+                          <div className="inline-block px-2.5 py-0.5 rounded-full bg-[#292242]/70 border border-[#9893ad]/25 text-[#d4cee2] text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-2.5 sm:mb-3">
                             {exp.duration}
                           </div>
 
-                          <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-purple-300 transition-colors font-[family-name:var(--font-syne)] uppercase tracking-tight">
-                            {exp.role} <span className="text-slate-500 font-normal">·</span> {exp.company}
+                          <h3 className="text-base sm:text-lg md:text-xl font-bold text-white group-hover:text-[#d4cee2] transition-colors font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                            {exp.role} <span className="text-[#5d5a70] font-normal">·</span> {exp.company}
                           </h3>
 
-                          <p className="mt-2.5 text-sm leading-relaxed text-slate-300 font-light">
+                          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-[#9893ad] font-light">
                             {exp.description}
                           </p>
 
-                          <div className="mt-4 flex flex-wrap gap-2">
+                          <div className="mt-3.5 sm:mt-4 flex flex-wrap gap-1.5 sm:gap-2">
                             {exp.tech.map((tech, idx) => (
                               <span 
                                 key={idx} 
-                                className="px-2.5 py-1 rounded-xl text-xs font-mono bg-white/[0.04] text-purple-200 border border-white/[0.07]"
+                                className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono bg-[#1e1930]/80 text-[#d4cee2] border border-[#9893ad]/20"
                               >
                                 {tech}
                               </span>
@@ -514,31 +503,31 @@ export function MinimalistLayout() {
 
                 {/* Education Section */}
                 <motion.section id="education" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
-                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                  <motion.div variants={itemUp} className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-8">
+                    <h2 className="text-xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
                       Education
                     </h2>
-                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                    <span className="flex-1 h-px bg-gradient-to-r from-[#43346b]/60 via-[#352a54]/30 to-transparent"></span>
                   </motion.div>
 
-                  <motion.div variants={itemUp} className="p-7 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                  <motion.div variants={itemUp} className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-[#1e1930]/40 border border-[#9893ad]/15 hover:border-[#d4cee2]/40 backdrop-blur-2xl transition-all shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_8px_30px_rgba(19,17,30,0.5)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
                     <div>
-                      <div className="flex items-center gap-2 text-purple-300 font-mono text-xs uppercase tracking-wider mb-2">
-                        <GraduationCap size={16} />
+                      <div className="flex items-center gap-2 text-[#c4b5fd] font-mono text-[11px] sm:text-xs uppercase tracking-wider mb-1.5 sm:mb-2">
+                        <GraduationCap size={15} />
                         {portfolioData.education.duration}
                       </div>
-                      <h3 className="text-lg md:text-xl font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight">
                         {portfolioData.education.degree}
                       </h3>
-                      <p className="text-slate-400 text-sm mt-1 font-light">
+                      <p className="text-[#9893ad] text-xs sm:text-sm mt-1 font-light">
                         {portfolioData.education.institution} — {portfolioData.education.location}
                       </p>
                     </div>
 
                     <div className="sm:self-center shrink-0">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-purple-500/15 border border-purple-400/30 text-purple-200 text-sm font-mono font-bold shadow-[0_0_20px_rgba(168,85,247,0.2)]">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl bg-[#352a54]/40 border border-[#9893ad]/30 text-[#d4cee2] text-xs sm:text-sm font-mono font-bold shadow-[0_0_20px_rgba(67,52,107,0.25)]">
                         <span>CGPA:</span>
-                        <span className="text-white text-base">{portfolioData.education.cgpa}</span>
+                        <span className="text-white text-sm sm:text-base">{portfolioData.education.cgpa}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -546,29 +535,29 @@ export function MinimalistLayout() {
 
                 {/* Achievements Section */}
                 <motion.section id="achievements" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
-                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                  <motion.div variants={itemUp} className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-8">
+                    <h2 className="text-xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
                       Honors & Awards
                     </h2>
-                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                    <span className="flex-1 h-px bg-gradient-to-r from-[#43346b]/60 via-[#352a54]/30 to-transparent"></span>
                   </motion.div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
                     {portfolioData.achievements.map((ach, i) => (
                       <motion.div 
                         key={i} 
                         variants={itemUp} 
-                        className="p-6 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all duration-300 flex flex-col justify-between shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)]"
+                        className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#1e1930]/40 border border-[#9893ad]/15 hover:border-[#d4cee2]/40 backdrop-blur-2xl transition-all duration-300 flex flex-col justify-between shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_8px_30px_rgba(19,17,30,0.5)]"
                       >
                         <div>
-                          <div className="flex items-center gap-2 text-amber-300 mb-3">
-                            <Award size={18} />
-                            <span className="text-xs font-mono uppercase tracking-wider font-semibold">{ach.event}</span>
+                          <div className="flex items-center gap-2 text-amber-300 mb-2 sm:mb-3">
+                            <Award size={16} />
+                            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider font-semibold">{ach.event}</span>
                           </div>
-                          <h3 className="text-lg font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight mb-2">
+                          <h3 className="text-base sm:text-lg font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight mb-1.5 sm:mb-2">
                             {ach.title}
                           </h3>
-                          <p className="text-slate-400 text-sm font-light leading-relaxed">
+                          <p className="text-[#9893ad] text-xs sm:text-sm font-light leading-relaxed">
                             {ach.description}
                           </p>
                         </div>
@@ -579,35 +568,35 @@ export function MinimalistLayout() {
 
                 {/* Skills Arsenal */}
                 <motion.section id="skills" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-8">
-                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                  <motion.div variants={itemUp} className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-8">
+                    <h2 className="text-xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
                       Technical Arsenal
                     </h2>
-                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                    <span className="flex-1 h-px bg-gradient-to-r from-[#43346b]/60 via-[#352a54]/30 to-transparent"></span>
                   </motion.div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                     {portfolioData.skills.map((skillGroup, idx) => (
                       <motion.div
                         key={idx}
                         variants={itemUp}
-                        className="p-6 rounded-3xl bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/40 backdrop-blur-2xl transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.4)]"
+                        className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#1e1930]/40 border border-[#9893ad]/15 hover:border-[#d4cee2]/40 backdrop-blur-2xl transition-all shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_8px_30px_rgba(19,17,30,0.5)]"
                       >
-                        <div className="flex items-center gap-2.5 mb-4">
-                          <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                        <div className="flex items-center gap-2.5 mb-3 sm:mb-4">
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#352a54]/40 border border-[#9893ad]/20 flex items-center justify-center">
                             {getCategoryIcon(skillGroup.category)}
                           </div>
-                          <h3 className="text-sm font-mono uppercase tracking-wider text-purple-200 font-semibold">
+                          <h3 className="text-xs sm:text-sm font-mono uppercase tracking-wider text-[#d4cee2] font-semibold">
                             {skillGroup.category}
                           </h3>
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
                           {skillGroup.items.map((skill, sIdx) => (
                             <motion.span
                               key={sIdx}
                               whileHover={{ scale: 1.05, y: -2 }}
-                              className="px-3 py-1.5 rounded-xl text-xs font-mono bg-white/[0.04] text-slate-300 border border-white/[0.07] hover:text-white hover:border-purple-400/40 hover:bg-purple-950/30 transition-all cursor-default"
+                              className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-mono bg-[#1e1930]/80 text-[#d4cee2] border border-[#9893ad]/20 hover:text-white hover:border-[#d4cee2]/50 hover:bg-[#352a54]/50 transition-all cursor-default"
                             >
                               {skill}
                             </motion.span>
@@ -632,22 +621,22 @@ export function MinimalistLayout() {
               >
                 {/* Projects Showcase */}
                 <motion.section id="projects" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center gap-4 mb-10">
-                    <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                  <motion.div variants={itemUp} className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-10">
+                    <h2 className="text-xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
                       Selected Works ({portfolioData.projects.length})
                     </h2>
-                    <span className="flex-1 h-px bg-gradient-to-r from-purple-500/40 via-violet-500/20 to-transparent"></span>
+                    <span className="flex-1 h-px bg-gradient-to-r from-[#43346b]/60 via-[#352a54]/30 to-transparent"></span>
                   </motion.div>
 
-                  <div className="grid grid-cols-1 gap-8">
+                  <div className="grid grid-cols-1 gap-4 sm:gap-8">
                     {portfolioData.projects.map((project) => (
                       <motion.div
                         key={project.id}
                         variants={itemUp}
-                        className="group relative rounded-3xl overflow-hidden bg-white/[0.035] border border-white/[0.08] hover:border-purple-400/50 backdrop-blur-2xl transition-all duration-500 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_16px_50px_rgba(0,0,0,0.6)] hover:shadow-[0_0_50px_rgba(168,85,247,0.2)] flex flex-col"
+                        className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#1e1930]/40 border border-[#9893ad]/15 hover:border-[#d4cee2]/50 backdrop-blur-2xl transition-all duration-500 shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_12px_40px_rgba(19,17,30,0.6)] hover:shadow-[0_0_40px_rgba(67,52,107,0.35)] flex flex-col"
                       >
                         {/* Media Viewport with Real Website Screenshot Hero */}
-                        <div className="w-full h-56 sm:h-72 bg-slate-900/60 relative overflow-hidden">
+                        <div className="w-full h-44 sm:h-64 md:h-72 bg-[#13111e]/80 relative overflow-hidden">
                           {project.image ? (
                             <img 
                               src={project.image as string} 
@@ -655,16 +644,16 @@ export function MinimalistLayout() {
                               className="w-full h-full object-cover object-top opacity-85 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-slate-500 font-mono text-xs uppercase tracking-widest">
+                            <div className="w-full h-full flex items-center justify-center text-[#9893ad] font-mono text-xs uppercase tracking-widest">
                               Case Study Preview
                             </div>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-[#13111e] via-[#13111e]/50 to-transparent" />
                           
                           {/* Live/Status Badge */}
-                          <div className="absolute top-4 left-4 z-20">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono uppercase tracking-wider bg-black/60 backdrop-blur-md text-purple-200 border border-white/[0.12] shadow-sm">
-                              <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-mono uppercase tracking-wider bg-[#13111e]/80 backdrop-blur-md text-[#d4cee2] border border-[#9893ad]/20 shadow-sm">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#c4b5fd]" />
                               {project.link !== "#" ? "Live Production" : "Engineered Solution"}
                             </span>
                           </div>
@@ -674,30 +663,30 @@ export function MinimalistLayout() {
                               href={project.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="absolute top-4 right-4 z-20 inline-flex items-center gap-1 px-3.5 py-1 rounded-full text-xs font-mono bg-purple-500/25 text-purple-200 border border-purple-400/40 backdrop-blur-xl hover:bg-purple-500 hover:text-white transition-all shadow-[0_0_20px_rgba(168,85,247,0.25)]"
+                              className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-mono bg-[#352a54]/60 text-[#d4cee2] border border-[#9893ad]/30 backdrop-blur-xl hover:bg-[#43346b] hover:text-white transition-all shadow-[0_0_15px_rgba(67,52,107,0.3)]"
                             >
-                              Live Site <ArrowUpRight size={13} />
+                              Live Site <ArrowUpRight size={12} className="sm:w-[13px] sm:h-[13px]" />
                             </a>
                           )}
                         </div>
 
                         {/* Content Container */}
-                        <div className="p-8 flex flex-col relative z-20 -mt-8 bg-gradient-to-t from-[#13111e] via-[#13111e]/95 to-transparent">
-                          <div className="flex items-start justify-between gap-4 mb-3">
-                            <h3 className="text-2xl font-black text-white group-hover:text-purple-300 transition-colors flex items-center gap-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                        <div className="p-4 sm:p-7 md:p-8 flex flex-col relative z-20 -mt-6 sm:-mt-8 bg-gradient-to-t from-[#13111e] via-[#13111e]/95 to-transparent">
+                          <div className="flex items-start justify-between gap-4 mb-2 sm:mb-3">
+                            <h3 className="text-lg sm:text-2xl font-black text-white group-hover:text-[#d4cee2] transition-colors flex items-center gap-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
                               {project.title}
                             </h3>
                           </div>
 
-                          <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-light">
+                          <p className="text-[#d4cee2]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-4 sm:mb-6 font-light line-clamp-2 sm:line-clamp-none">
                             {project.description}
                           </p>
 
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-1.5 sm:gap-2">
                             {project.tech.map((t, index) => (
                               <span 
                                 key={index} 
-                                className="px-3 py-1 bg-purple-950/35 text-purple-200 text-xs font-mono rounded-xl border border-purple-500/20 backdrop-blur-sm"
+                                className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#292242]/50 text-[#d4cee2] text-[10px] sm:text-xs font-mono rounded-lg sm:rounded-xl border border-[#9893ad]/20 backdrop-blur-sm"
                               >
                                 {t}
                               </span>
@@ -711,23 +700,23 @@ export function MinimalistLayout() {
 
                 {/* Allies Say / Reviews Carousel */}
                 <motion.section id="reviews" initial="hidden" whileInView="show" viewport={{ once: false, margin: "-40px" }} variants={staggerContainer}>
-                  <motion.div variants={itemUp} className="flex items-center justify-between gap-4 mb-10">
-                    <div className="flex items-center gap-4">
-                      <h2 className="text-2xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
+                  <motion.div variants={itemUp} className="flex items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-10">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <h2 className="text-xl sm:text-3xl font-black uppercase text-white font-[family-name:var(--font-syne)] tracking-tight">
                         Allies & Feedback
                       </h2>
-                      <span className="w-16 h-px bg-purple-500/40 hidden sm:block"></span>
+                      <span className="w-12 sm:w-16 h-px bg-[#43346b]/60 hidden sm:block"></span>
                     </div>
 
                     <button
                       onClick={() => setIsReviewFormOpen(!isReviewFormOpen)}
-                      className="text-purple-200 text-xs font-mono uppercase tracking-wider flex items-center gap-2 hover:text-white transition-colors bg-purple-950/40 px-3.5 py-2 rounded-2xl border border-purple-500/30 backdrop-blur-md"
+                      className="text-[#d4cee2] text-[11px] sm:text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 hover:text-white transition-colors bg-[#1e1930]/60 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border border-[#9893ad]/25 backdrop-blur-md shadow-[0_0_15px_rgba(67,52,107,0.2)]"
                     >
-                      {isReviewFormOpen ? "Close Form" : <><Plus size={14} /> Drop a Review</>}
+                      {isReviewFormOpen ? "Close Form" : <><Plus size={13} /> Drop a Review</>}
                     </button>
                   </motion.div>
 
-                  <div className="relative min-h-[380px] w-full">
+                  <div className="relative min-h-[340px] sm:min-h-[380px] w-full">
                     <AnimatePresence mode="wait">
                       {isReviewFormOpen ? (
                         <motion.form
@@ -735,7 +724,7 @@ export function MinimalistLayout() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: smoothEase } }}
                           exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }}
-                          className="bg-white/[0.035] border border-white/[0.08] p-8 rounded-3xl flex flex-col gap-4 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)]"
+                          className="bg-[#1e1930]/40 border border-[#9893ad]/15 p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col gap-3.5 sm:gap-4 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_12px_40px_rgba(19,17,30,0.6)]"
                           onSubmit={async (e) => {
                             e.preventDefault();
                             if (!supabase) {
@@ -760,15 +749,15 @@ export function MinimalistLayout() {
                             }
                           }}
                         >
-                          <h3 className="text-lg font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight">Leave Feedback</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <h3 className="text-base sm:text-lg font-bold text-white font-[family-name:var(--font-syne)] uppercase tracking-tight">Leave Feedback</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <input 
                               type="text" 
                               value={reviewName} 
                               onChange={e => setReviewName(e.target.value)} 
                               placeholder="Your Name" 
                               required 
-                              className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors text-sm font-mono" 
+                              className="bg-[#13111e]/60 border border-[#9893ad]/20 rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 text-[#d4cee2] outline-none focus:border-[#d4cee2]/50 transition-colors text-xs sm:text-sm font-mono" 
                             />
                             <input 
                               type="text" 
@@ -776,7 +765,7 @@ export function MinimalistLayout() {
                               onChange={e => setReviewRole(e.target.value)} 
                               placeholder="Your Role (e.g. Lead Engineer)" 
                               required 
-                              className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors text-sm font-mono" 
+                              className="bg-[#13111e]/60 border border-[#9893ad]/20 rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 text-[#d4cee2] outline-none focus:border-[#d4cee2]/50 transition-colors text-xs sm:text-sm font-mono" 
                             />
                           </div>
                           <textarea 
@@ -785,12 +774,12 @@ export function MinimalistLayout() {
                             placeholder="Share your experience working with Aashray..." 
                             required 
                             rows={4} 
-                            className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors resize-none text-sm font-mono"
+                            className="bg-[#13111e]/60 border border-[#9893ad]/20 rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 text-[#d4cee2] outline-none focus:border-[#d4cee2]/50 transition-colors resize-none text-xs sm:text-sm font-mono"
                           />
                           <button 
                             type="submit" 
                             disabled={isSubmitting} 
-                            className="bg-gradient-to-r from-purple-600 to-violet-500 hover:from-purple-500 hover:to-violet-400 text-white font-bold text-xs uppercase tracking-wider font-mono px-6 py-3 rounded-2xl transition-all self-end flex items-center gap-2 disabled:opacity-50 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+                            className="bg-gradient-to-r from-[#43346b] via-[#352a54] to-[#292242] hover:from-[#544280] hover:to-[#3e3063] text-white font-bold text-xs uppercase tracking-wider font-mono px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-[#9893ad]/30 transition-all self-end flex items-center gap-2 disabled:opacity-50 shadow-[0_0_20px_rgba(67,52,107,0.3)]"
                           >
                             {isSubmitting ? "Submitting..." : "Submit Review"}
                           </button>
@@ -801,9 +790,9 @@ export function MinimalistLayout() {
                           initial={{ opacity: 0, y: -20 }}
                           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: smoothEase } }}
                           exit={{ opacity: 0, y: 20, transition: { duration: 0.3 } }}
-                          className="bg-white/[0.035] border border-white/[0.08] p-8 md:p-12 rounded-3xl flex items-center justify-center overflow-hidden relative backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)]"
+                          className="bg-[#1e1930]/40 border border-[#9893ad]/15 p-6 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl flex items-center justify-center overflow-hidden relative backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_12px_40px_rgba(19,17,30,0.6)]"
                         >
-                          <Quote className="absolute top-8 left-8 text-white/[0.03] w-28 h-28 pointer-events-none" />
+                          <Quote className="absolute top-6 left-6 sm:top-8 sm:left-8 text-white/[0.03] w-20 h-20 sm:w-28 sm:h-28 pointer-events-none" />
                           <AnimatePresence mode="wait">
                             {liveReviews.length > 0 && (
                               <motion.div
@@ -814,18 +803,18 @@ export function MinimalistLayout() {
                                 transition={{ duration: 0.5, ease: smoothEase }}
                                 className="w-full relative z-10"
                               >
-                                <p className="text-lg md:text-xl text-slate-200 leading-relaxed mb-8 font-light italic">
+                                <p className="text-base sm:text-lg md:text-xl text-[#d4cee2] leading-relaxed mb-6 sm:mb-8 font-light italic">
                                   &ldquo;{liveReviews[currentReview]?.text}&rdquo;
                                 </p>
-                                <div className="flex items-center gap-4">
-                                  <div className="w-11 h-11 rounded-full bg-purple-950/60 border border-purple-400/40 flex items-center justify-center font-bold text-purple-200 uppercase font-mono shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+                                <div className="flex items-center gap-3 sm:gap-4">
+                                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#292242]/80 border border-[#9893ad]/30 flex items-center justify-center font-bold text-[#d4cee2] uppercase font-mono shadow-[0_0_15px_rgba(67,52,107,0.2)] text-xs sm:text-sm">
                                     {liveReviews[currentReview]?.name?.charAt(0) || "A"}
                                   </div>
                                   <div>
-                                    <h4 className="text-white font-bold font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                                    <h4 className="text-white font-bold font-[family-name:var(--font-syne)] uppercase tracking-tight text-sm sm:text-base">
                                       {liveReviews[currentReview]?.name}
                                     </h4>
-                                    <p className="text-purple-300/70 text-xs font-mono">
+                                    <p className="text-[#9893ad] text-[11px] sm:text-xs font-mono">
                                       {liveReviews[currentReview]?.role}
                                     </p>
                                   </div>
@@ -836,12 +825,12 @@ export function MinimalistLayout() {
           </AnimatePresence>
 
                           {/* Indicators */}
-                          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                          <div className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
                             {liveReviews.map((_, i) => (
                               <button
                                 key={i}
                                 onClick={() => setCurrentReview(i)}
-                                className={`h-1.5 rounded-full transition-all duration-300 ${currentReview === i ? 'bg-purple-400 w-6 shadow-[0_0_8px_rgba(192,132,252,0.8)]' : 'bg-white/20 w-1.5'}`}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${currentReview === i ? 'bg-[#d4cee2] w-6 shadow-[0_0_8px_rgba(212,206,226,0.8)]' : 'bg-[#9893ad]/30 w-1.5'}`}
                               />
                             ))}
                           </div>
@@ -862,13 +851,13 @@ export function MinimalistLayout() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.9, delay: 0.15, ease: smoothEase }}
-                className="flex flex-col gap-8 pt-2"
+                className="flex flex-col gap-6 sm:gap-8 pt-2"
               >
                 <motion.div initial="hidden" animate="show" variants={staggerContainer} className="text-center lg:text-left">
-                  <motion.h2 variants={itemUp} className="text-3xl md:text-4xl font-black text-white mb-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
+                  <motion.h2 variants={itemUp} className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 font-[family-name:var(--font-syne)] uppercase tracking-tight">
                     Let&apos;s Build Together.
                   </motion.h2>
-                  <motion.p variants={itemUp} className="text-slate-400 text-sm md:text-base max-w-lg font-light leading-relaxed">
+                  <motion.p variants={itemUp} className="text-[#9893ad] text-xs sm:text-sm md:text-base max-w-lg font-light leading-relaxed">
                     Have an interesting project, collaboration opportunity, or just want to connect? Send a note or reach out directly.
                   </motion.p>
                 </motion.div>
@@ -877,58 +866,67 @@ export function MinimalistLayout() {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.7, delay: 0.15, ease: smoothEase }}
-                  action={`mailto:${portfolioData.contactEmail}`}
-                  method="POST"
-                  encType="text/plain"
-                  className="bg-white/[0.035] border border-white/[0.08] rounded-3xl p-6 md:p-8 w-full flex flex-col gap-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_12px_40px_rgba(0,0,0,0.5)] relative overflow-hidden backdrop-blur-2xl"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const form = e.currentTarget;
+                    const formData = new FormData(form);
+                    const name = (formData.get("name") as string) || "";
+                    const email = (formData.get("email") as string) || "";
+                    const message = (formData.get("message") as string) || "";
+                    const subject = encodeURIComponent(`Portfolio Inquiry from ${name}`);
+                    const body = encodeURIComponent(`Hi Aashray,\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(portfolioData.contactEmail)}&su=${subject}&body=${body}`;
+                    window.open(gmailUrl, "_blank");
+                  }}
+                  className="bg-[#1e1930]/40 border border-[#9893ad]/15 rounded-2xl sm:rounded-3xl p-5 sm:p-8 w-full flex flex-col gap-3.5 sm:gap-4 shadow-[inset_0_1px_1px_rgba(212,206,226,0.08),0_12px_40px_rgba(19,17,30,0.6)] relative overflow-hidden backdrop-blur-2xl"
                 >
-                  <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-purple-500/8 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-[#43346b]/15 rounded-full blur-[80px] pointer-events-none" />
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4 relative z-10">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-mono font-medium uppercase tracking-wider text-purple-300/80">Your Name</label>
+                      <label className="text-[10px] sm:text-[11px] font-mono font-medium uppercase tracking-wider text-[#d4cee2]/80">Your Name</label>
                       <input 
                         name="name" 
                         type="text" 
                         required 
                         placeholder="Ada Lovelace" 
-                        className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors w-full text-sm font-mono" 
+                        className="bg-[#13111e]/60 border border-[#9893ad]/20 rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 text-[#d4cee2] outline-none focus:border-[#d4cee2]/50 transition-colors w-full text-xs sm:text-sm font-mono" 
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-mono font-medium uppercase tracking-wider text-purple-300/80">Your Email</label>
+                      <label className="text-[10px] sm:text-[11px] font-mono font-medium uppercase tracking-wider text-[#d4cee2]/80">Your Email</label>
                       <input 
                         name="email" 
                         type="email" 
                         required 
                         placeholder="ada@example.com" 
-                        className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors w-full text-sm font-mono" 
+                        className="bg-[#13111e]/60 border border-[#9893ad]/20 rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 text-[#d4cee2] outline-none focus:border-[#d4cee2]/50 transition-colors w-full text-xs sm:text-sm font-mono" 
                       />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5 relative z-10">
-                    <label className="text-[11px] font-mono font-medium uppercase tracking-wider text-purple-300/80">Message</label>
+                    <label className="text-[10px] sm:text-[11px] font-mono font-medium uppercase tracking-wider text-[#d4cee2]/80">Message</label>
                     <textarea 
                       name="message" 
                       required 
                       rows={3} 
                       placeholder="Tell me about your vision or idea..." 
-                      className="bg-black/40 border border-white/[0.1] rounded-2xl px-4 py-2.5 text-purple-100 outline-none focus:border-purple-400/50 transition-colors w-full resize-none text-sm font-mono"
+                      className="bg-[#13111e]/60 border border-[#9893ad]/20 rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 text-[#d4cee2] outline-none focus:border-[#d4cee2]/50 transition-colors w-full resize-none text-xs sm:text-sm font-mono"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="mt-2 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-violet-500 hover:from-purple-500 hover:to-violet-400 text-white font-bold px-6 py-3 rounded-2xl transition-all w-full flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.35)] hover:shadow-[0_0_35px_rgba(168,85,247,0.5)] relative z-10 font-mono tracking-wider uppercase text-xs"
+                    className="mt-2 bg-gradient-to-r from-[#43346b] via-[#352a54] to-[#292242] hover:from-[#544280] hover:to-[#3e3063] text-white font-bold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-[#9893ad]/30 transition-all w-full flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(67,52,107,0.35)] relative z-10 font-mono tracking-wider uppercase text-xs"
                   >
-                    <Send size={15} />
+                    <Send size={14} className="sm:w-[15px] sm:h-[15px]" />
                     Send Transmission
                   </button>
                 </motion.form>
 
                 {/* 3D Morphing Icon Interactive Experience */}
-                <motion.div variants={itemUp} className="w-full h-[220px] mt-2">
+                <motion.div variants={itemUp} className="w-full h-[180px] sm:h-[220px] mt-2">
                   <IglooStyleIcons />
                 </motion.div>
               </motion.div>
@@ -940,11 +938,11 @@ export function MinimalistLayout() {
           </AnimatePresence>
 
           {/* Footer */}
-          <footer className="text-xs text-slate-500 mt-auto border-t border-white/[0.06] pt-8 font-mono text-center lg:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
+          <footer className="text-xs text-[#9893ad]/70 mt-auto border-t border-[#9893ad]/15 pt-8 font-mono text-center lg:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>
-              Designed & Engineered by <span className="text-purple-200 font-semibold">{portfolioData.name}</span>
+              Designed & Engineered by <span className="text-[#d4cee2] font-semibold">{portfolioData.name}</span>
             </p>
-            <p className="text-purple-400/60">
+            <p className="text-[#9893ad]/50">
               Next.js · Three.js · Tailwind CSS
             </p>
           </footer>

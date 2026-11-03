@@ -8,10 +8,10 @@ interface IntroAnimationProps {
 }
 
 export function IntroAnimation({ onComplete }: IntroAnimationProps) {
-  const logoControls     = useAnimationControls();
+  const logoControls = useAnimationControls();
   const gradientControls = useAnimationControls();
 
-  // Keep a stable ref to onComplete to prevent re-triggering the sequence if parent re-renders
+  // Stable ref to onComplete prevents re-triggering if parent re-renders
   const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
@@ -36,7 +36,7 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
       if (cancelled) return;
 
       // ── Phase 3: Logo shrinks inward into the center point (2.2s → 3.0s) ──────────
-      // Exactly matching the video: collapses down to scale 0.15 at center
+      // Collapses down to scale 0.15 at center before 3D sculpture unfolds
       await logoControls.start({
         opacity: 0,
         scale: 0.15,
@@ -53,11 +53,10 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
         transition: { duration: 4.2, ease: [0.25, 0.1, 0.25, 1] },
       });
 
-      // Wait for the 3D sculpture expansion and merge to complete
       await new Promise<void>((resolve) => setTimeout(resolve, 4300));
       if (cancelled) return;
 
-      // ── Phase 5: Merge completed → reveal user details and content ────────────────
+      // ── Phase 5 (7.3s+): Transition complete → show portfolio UI ───────────
       onCompleteRef.current?.();
     }
 
@@ -109,15 +108,17 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
         </motion.div>
 
         {/* Skip button for quick access */}
-        <button
-          onClick={() => onCompleteRef.current?.()}
-          className="absolute bottom-8 right-8 pointer-events-auto text-[11px] font-mono
-                     uppercase tracking-[0.22em] text-[#d4cee2]/60 hover:text-white
-                     transition-all duration-300 px-3.5 py-1.5 rounded-full bg-[#1e1930]/60
-                     border border-[#9893ad]/20 hover:border-[#d4cee2]/50 backdrop-blur-md shadow-[0_0_15px_rgba(53,42,84,0.3)]"
-        >
-          Skip →
-        </button>
+        <div className="fixed inset-0 z-50 pointer-events-none flex items-end justify-end p-8">
+          <button
+            onClick={() => onCompleteRef.current?.()}
+            className="pointer-events-auto text-[11px] font-mono
+                       uppercase tracking-[0.22em] text-[#d4cee2]/60 hover:text-white
+                       transition-all duration-300 px-3.5 py-1.5 rounded-full bg-[#1e1930]/60
+                       border border-[#9893ad]/20 hover:border-[#d4cee2]/50 backdrop-blur-md shadow-[0_0_15px_rgba(53,42,84,0.3)]"
+          >
+            Skip →
+          </button>
+        </div>
       </div>
     </>
   );
